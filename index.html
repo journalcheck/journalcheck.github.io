@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JournalCheck: predatory and hijacked journal checker</title>
+<meta name="description" content="JournalCheck checks a journal against 21 indicators from OpenAlex, Crossref, DOAJ, domain records, its website and public lists, then gives an explained verdict: Low risk, Caution or High risk. Includes a labelled dataset of 108 journals.">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231F3A5F'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="JournalCheck home">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7"/><path d="M9 16.5l4.5 4.5L23 11"/></svg></span>
+      JournalCheck
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#check">Check a journal</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#how">How it works</a>
+      <a href="#results">Results</a>
+      <a href="#run">Run it</a>
+      <a class="gh" href="https://github.com/journalcheck/journalcheck" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="wrap hero-in">
+    <div class="hero-text">
+      <p class="eyebrow">B.Tech major project · Woxsen University · 2026</p>
+      <h1>Check a journal before you send it your paper.</h1>
+      <p class="lead">JournalCheck tests a journal against <strong>21 indicators</strong> drawn from OpenAlex, Crossref, DOAJ, domain records, the journal's own website and public lists. A rule engine and a machine-learning model score the same evidence, and every verdict shows the evidence behind it.</p>
+      <div class="cta">
+        <a class="btn primary" href="#check">Check a journal</a>
+        <a class="btn" href="#dataset">Browse the 108-journal dataset</a>
+      </div>
+    </div>
+    <aside class="hero-card" aria-label="Example verdict">
+      <div class="hc-head"><span class="mono">ISSN 2395-0056</span><span class="chip v-high">High risk</span></div>
+      <p class="hc-title">International Research Journal of Engineering and Technology</p>
+      <div class="hc-score"><span class="big">20</span><span class="of">/ 100 trust</span></div>
+      <ul class="hc-list">
+        <li><span class="dot fail"></span>ISSN has no OpenAlex or Crossref record</li>
+        <li><span class="dot fail"></span>Shows an unofficial "impact factor"</li>
+        <li><span class="dot fail"></span>Promises publication "in 3 days"</li>
+        <li><span class="dot fail"></span>Sells certificates and hard copies</li>
+      </ul>
+      <a class="hc-link" href="#journal/M09">Open the full evidence report →</a>
+    </aside>
+  </div>
+  <div class="wrap stats" id="stats" aria-label="Key results">
+    <div class="stat"><span class="sv">0.93</span><span class="lbl">F1 score of the hybrid in cross-validation</span></div>
+    <div class="stat"><span class="sv">12 / 13</span><span class="lbl">verdicts agree with the mini project's manual checks</span></div>
+    <div class="stat"><span class="sv">15 / 15</span><span class="lbl">live hijacked clones caught</span></div>
+    <div class="stat"><span class="sv">108</span><span class="lbl">labelled journals, published here</span></div>
+  </div>
+</section>
+
+<section class="section" id="check">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Check a journal</h2>
+      <p>Your browser asks OpenAlex, Crossref and DOAJ directly and applies the framework's registry rules. That covers up to 9 of the 21 indicators. The checks on the website's wording, the public lists and the model need the full tool (<a href="#run">run it on your computer</a>).</p>
+    </div>
+    <form class="checkform" id="checkform" autocomplete="off">
+      <label class="fld"><span>ISSN</span><input id="f-issn" name="issn" inputmode="text" placeholder="e.g. 2395-0056" required maxlength="12"></label>
+      <label class="fld grow"><span>Website you were sent to <em>(optional, enables the clone checks I3 and I4)</em></span><input id="f-url" name="url" type="text" placeholder="e.g. https://www.example-journal.org"></label>
+      <button class="btn primary" type="submit" id="f-go">Check</button>
+    </form>
+    <div class="examples">Try: <button type="button" data-issn="1877-0509">Procedia Computer Science</button><button type="button" data-issn="2395-0056">IRJET</button><button type="button" data-issn="1517-4492" data-url="https://www.periodicos.ulbra.org/index.php/acta/index">Acta Scientiae + a look-alike site</button></div>
+    <div id="check-out" class="check-out" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="section alt" id="dataset">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>The dataset</h2>
+      <p>108 journals labelled from independent sources: legitimate journals sampled from OpenAlex core sources, DOAJ and Indian Scopus titles; predatory journals from the Beall's list archive; hijacked clones from the Retraction Watch Hijacked Journal Checker; and the 13 journals checked by hand in the mini project, kept aside as an external test. Select a journal to see its evidence report.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Filter by class" id="seg-label"></div>
+      <div class="seg" role="group" aria-label="Filter by split" id="seg-split"></div>
+      <input class="search" id="q" type="search" placeholder="Search title, ISSN or ID" aria-label="Search the dataset">
+    </div>
+    <div class="tablewrap tall">
+      <table class="dtable" id="dtable">
+        <thead><tr>
+          <th data-k="id" class="c-id">ID</th>
+          <th data-k="title">Journal</th>
+          <th data-k="issn" class="c-issn">ISSN</th>
+          <th data-k="label">Class</th>
+          <th data-k="rule" class="num c-sc">Rules</th>
+          <th data-k="model" class="num c-sc">Model</th>
+          <th data-k="hybrid" class="num">Trust</th>
+          <th data-k="verdict">Verdict</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="tfoot">
+      <span id="count"></span>
+      <span class="dl">Download: <a href="data/journalcheck_dataset.csv" download>dataset with scores (CSV)</a> · <a href="data/journals.json" download>full evidence (JSON)</a> · <a href="https://github.com/journalcheck/journalcheck/blob/main/data/features.csv">features.csv</a></span>
+    </div>
+    <p class="note">Model scores of the 95 training journals are out-of-fold: each was scored by a model that had not seen it. The 13 external journals were scored by the final model. Labels come from public sources and are not a finding that any journal is predatory.</p>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>How it works</h2>
+      <p>Six layers turn a journal into a verdict. The collectors gather evidence; the indicators turn it into pass, fail or "not checked"; two scorers judge the same evidence independently; decision rules and a person have the last word.</p>
+    </div>
+    <figure class="fig"><img src="img/pipeline.webp" width="1600" height="1232" loading="lazy" alt="Pipeline: input, collect, extract 21 indicators, score with rules and a model, decide with bands and overrides, report and human review."><figcaption>From an ISSN, title or website to an explained verdict.</figcaption></figure>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Rule score</h3><p>Each indicator earns its points on a pass, nothing on a fail and half when it cannot be checked. Points earned out of 40, as a percentage.</p></div>
+      <div class="step"><span class="n">2</span><h3>Model score</h3><p>A logistic-regression model trained on the labelled journals estimates the chance of high risk from 17 indicators and 14 numbers. Model score = 100 − that chance.</p></div>
+      <div class="step"><span class="n">3</span><h3>Trust score</h3><p>The average of the two. <b class="t-low">80 or more: Low risk.</b> <b class="t-cau">50–79: Caution.</b> <b class="t-high">Below 50: High risk.</b></p></div>
+      <div class="step"><span class="n">4</span><h3>Overrides</h3><p>Decisive evidence replaces the band: a listed clone (K1), a court finding (K2) or a false indexing claim (K3) means High risk. An integrity alert caps the verdict at Caution.</p></div>
+      <div class="step"><span class="n">5</span><h3>Human review</h3><p>A person checks any Caution, any override, a 30-point disagreement between the scorers, evidence coverage below 60% or a possible clone.</p></div>
+      <div class="step"><span class="n">6</span><h3>Evidence report</h3><p>Every verdict comes with the evidence for each indicator, the model's main factors and five manual checks (M1–M5) for the reviewer.</p></div>
+    </div>
+    <h3 class="sub">The 21 indicators</h3>
+    <div class="cats" id="cats"></div>
+    <details class="more"><summary>The five checks only a person can do</summary><ol id="manual"></ol></details>
+  </div>
+</section>
+
+<section class="section alt" id="results">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Results</h2>
+      <p>Ten repeats of five-fold cross-validation on the 95 training journals, then an external test on the 13 mini-project journals. "Flagged" means any verdict other than Low risk.</p>
+    </div>
+    <div class="tablewrap"><table class="mtable" id="mtable"><thead><tr><th>Set-up</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">ROC-AUC</th><th class="num">Legitimate flagged</th><th class="num">High risk missed</th></tr></thead><tbody></tbody></table></div>
+    <div class="gallery">
+      <figure class="fig"><img src="img/external-test.webp" width="1600" height="982" loading="lazy" alt="Scores and verdicts for the 13 mini-project journals against the manual verdicts; 12 of 13 agree."><figcaption>External test: 12 of 13 verdicts match the manual checks (Cohen's κ 0.87). The one miss is IJERT, rated Low risk.</figcaption></figure>
+      <figure class="fig"><img src="img/identity-evidence.webp" width="1600" height="588" loading="lazy" alt="Identity evidence on 15 live clones and 46 legitimate journals."><figcaption>Hijacked clones are caught by the list check (15 of 15). Identity checks alone catch fewer, so the list matters.</figcaption></figure>
+      <figure class="fig"><img src="img/vs-public-lists.webp" width="1600" height="790" loading="lazy" alt="JournalCheck compared with single public lists on the 95 training journals."><figcaption>JournalCheck against single public lists on the training journals.</figcaption></figure>
+      <figure class="fig"><img src="img/how-to-act.webp" width="1600" height="660" loading="lazy" alt="What a student should do for each verdict: Low risk, Caution, High risk."><figcaption>How to act on each verdict. JournalCheck is a triage aid, not a blacklist.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="run">
+  <div class="wrap two">
+    <div>
+      <h2>Run the full tool</h2>
+      <p>The full check reads the journal's website, the public lists and the trained model, and opens in your browser as a small web app. It needs Python 3.10 or newer.</p>
+<pre class="code"><code>git clone https://github.com/journalcheck/journalcheck
+cd journalcheck
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+python scripts/build_lists.py     # download the public lists
+streamlit run app.py              # opens http://localhost:8501</code></pre>
+      <p class="small">On Windows use <code>.venv\Scripts\activate</code>. On a Mac you can double-click <code>run_journalcheck.command</code> instead.</p>
+    </div>
+    <div>
+      <h2>Reproduce the evaluation</h2>
+<pre class="code"><code>python scripts/build_dataset.py   # labelled sample (seed 42)
+python scripts/add_india.py       # 10 Indian Scopus journals
+python scripts/collect.py         # evidence + features.csv
+python scripts/evaluate.py        # metrics, models, figures
+python scripts/build_site.py      # this website's data</code></pre>
+      <p class="small">The evaluation needs only <code>data/features.csv</code>, which is in the repository, so <code>evaluate.py</code> reproduces every number above without going online.</p>
+      <ul class="links">
+        <li><a href="https://github.com/journalcheck/journalcheck">Source code and README</a></li>
+        <li><a href="https://github.com/journalcheck/journalcheck/blob/main/journalcheck/config.py">Every weight and threshold (config.py)</a></li>
+        <li><a href="https://github.com/journalcheck/journalcheck/tree/main/results">Results folder</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="use">
+  <div class="wrap two">
+    <div>
+      <h2>Responsible use</h2>
+      <p>JournalCheck is a triage aid. A High-risk verdict means a person should look at the journal before submitting; it is not a finding that a journal is predatory. Country and language are not used as features, but the error analysis found that Indian legitimate journals were flagged more often (5 of 11, against 3 of 29 others), so a Caution or High-risk verdict on a regional journal deserves a careful human look.</p>
+    </div>
+    <div>
+      <h2>About</h2>
+      <p>Built by <strong>Rhea Ishani Chemudupati</strong> and <strong>Himanshu Maurya</strong> for the course Research Writing, Intellectual Property and Scholarly Publishing, School of Technology, Woxsen University, under the guidance of <strong>Dr. M. Upendra Kumar</strong>. The project turns the 20-criterion checklist of the team's mini project into an automated, explainable framework.</p>
+      <p class="small">Code: MIT licence. Dataset labels and scores: CC BY 4.0. Public lists are not redistributed; <code>build_lists.py</code> downloads them from their sources.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap">JournalCheck · Woxsen University · 2026 · <a href="https://github.com/journalcheck/journalcheck">github.com/journalcheck/journalcheck</a></div></footer>
+
+<dialog id="report" aria-labelledby="r-title">
+  <div class="r-in">
+    <button class="r-close" type="button" aria-label="Close report" data-close>×</button>
+    <div id="r-body"></div>
+  </div>
+</dialog>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>
