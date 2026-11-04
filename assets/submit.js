@@ -333,7 +333,7 @@
       const js = kind !== "conference" ? await rankJournals(sem, cj, opt) : [];
       const cs = kind !== "journal" ? rankConferences(sem, cc, opt) : [];
       const col = (title, items, card, empty) => `<section class="ws-col"><div class="ws-col-head"><p class="label">${title}</p><span class="label">${items.length} of 10</span></div>${items.length ? `<ol class="ws-list">${items.map(card).join("")}</ol>` : `<p class="note">${empty}</p>`}</section>`;
-      out.innerHTML = `<div class="ws-terms"><span class="label">Searched for</span>${ts.map((t) => `<span class="ws-term">${esc(t)}</span>`).join("")}</div>
+      out.innerHTML = `<div class="ws-terms"><span class="label">Matched by meaning to your title and abstract, and by keywords</span>${focus(ts).map((t) => `<span class="ws-term">${esc(t)}</span>`).join("")}</div>
         <div class="ws-cols ${kind === "both" ? "two" : ""}">
           ${kind !== "conference" ? col("Journals", js, journalCard, "No journal matched. Try broader keywords or remove a filter.") : ""}
           ${kind !== "journal" ? col("Conferences (computer science)", cs, confCard, "No tracked conference matched. Conference deadlines cover computer science only for now.") : ""}
