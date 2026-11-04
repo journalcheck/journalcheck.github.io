@@ -1,6 +1,6 @@
 /* JournalCheck — Where to submit (beta).
-   Everything runs in the reader's browser: the PDF is read locally and only a handful of
-   search terms are sent to OpenAlex. Journals and conferences are ranked by how much
+   Everything runs in the reader's browser: the PDF is read locally and only the title,
+   abstract and keywords are sent to OpenAlex. Journals and conferences are ranked by how much
    similar recent work they published, then screened with JournalCheck's registry rules. */
 (() => {
   "use strict";
@@ -92,7 +92,7 @@
     Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
     if (key()) u.searchParams.set("api_key", key());
     const r = await fetch(u, { headers: { Accept: "application/json" } });
-    if (r.status === 429) throw new Error("OpenAlex's free daily allowance for this connection is used up. Add a free OpenAlex key under “Options” or try again tomorrow.");
+    if (r.status === 429) { $(".ws-adv").open = true; throw new Error("OpenAlex's free daily allowance for this network is used up (on a shared network such as a campus it is shared by everyone). Paste a free OpenAlex key under “Options” below and search again, or try tomorrow."); }
     if (!r.ok) throw new Error(`OpenAlex answered ${r.status}.`);
     return r.json();
   }
