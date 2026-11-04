@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where to submit (beta) · JournalCheck</title>
+<meta name="description" content="Upload a paper or type its title and abstract: JournalCheck suggests ten journals and ten computer-science conferences that publish similar work, with fees, deadlines and a safety screen. Runs in your browser.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#e5e4e0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=20261104b">
+<link rel="stylesheet" href="assets/submit.css?v=20261104b">
+<script>
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("motion");
+    setTimeout(function () { if (!window.__motionReady) document.documentElement.classList.remove("motion"); }, 2500);
+  }
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e5e4e0'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%231d1d1d' stroke-width='2'/%3E%3Cpath d='M11 16.5l3.5 3.5L21.5 12' stroke='%231d1d1d' stroke-width='2.4' fill='none' stroke-linecap='square'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="index.html" aria-label="JournalCheck home">JournalCheck<span class="dot-mark">.</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="index.html#check">Check</a>
+      <a href="submit.html" aria-current="page">Where to submit <sup class="beta">Beta</sup></a>
+      <a href="index.html#dataset">Dataset</a>
+      <a href="index.html#how">How it works</a>
+      <a class="gh" href="https://github.com/journalcheck/journalcheck" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="ws-hero">
+  <div class="wrap">
+    <p class="label">Beta — Where to submit</p>
+    <h1 class="display">Where should<br>this paper go?</h1>
+    <div class="ws-intro">
+      <p class="lead">Upload your paper or type its title and abstract. JournalCheck finds the journals and computer-science conferences that published the most similar work in the last five years, shows their fees and next deadlines, and drops any journal that fails its safety checks.</p>
+      <p class="small ws-privacy"><b>Your paper stays on your device.</b> The PDF is read in your browser; only a few search terms are sent to OpenAlex.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section ws-form-sec">
+  <div class="wrap">
+    <form id="ws-form" class="ws-form" autocomplete="off">
+      <label class="ws-drop" id="ws-drop">
+        <input type="file" id="ws-file" accept="application/pdf,.pdf">
+        <span class="ws-drop-in"><b>Drop a PDF here</b> or click to choose one<span class="small">The title, abstract and keywords are filled in for you to check.</span></span>
+      </label>
+      <p class="ws-status" id="ws-status" aria-live="polite"></p>
+      <div class="ws-fields">
+        <label class="fld"><span>Title</span><input id="ws-title" placeholder="e.g. Detecting hijacked journals with registry evidence"></label>
+        <label class="fld"><span>Abstract</span><textarea id="ws-abstract" rows="6" placeholder="Paste the abstract"></textarea></label>
+        <label class="fld"><span>Keywords <em>(optional, separated by commas)</em></span><input id="ws-keywords" placeholder="e.g. predatory journals, scholarly publishing, machine learning"></label>
+      </div>
+      <div class="ws-opts">
+        <fieldset class="ws-kind"><legend class="label">Looking for</legend>
+          <label><input type="radio" name="ws-kind" value="both" checked><span>Both</span></label>
+          <label><input type="radio" name="ws-kind" value="journal"><span>Journals</span></label>
+          <label><input type="radio" name="ws-kind" value="conference"><span>Conferences</span></label>
+        </fieldset>
+        <label class="ws-check"><input type="checkbox" id="ws-oa"><span>Open-access journals only</span></label>
+        <label class="fld ws-small"><span>Max fee (US$)</span><input id="ws-fee" type="number" min="0" step="50" placeholder="Any"></label>
+        <label class="fld ws-small"><span>Deadline within</span><select id="ws-months"><option value="0">Any time</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select></label>
+        <button class="pill solid" id="ws-go" type="submit">Find venues <span aria-hidden="true">→</span></button>
+      </div>
+      <details class="more ws-adv"><summary>Options <span aria-hidden="true">→</span></summary>
+        <label class="fld"><span>OpenAlex API key <em>(optional; free at openalex.org, raises the daily search allowance; kept in this browser only)</em></span><input id="ws-key" placeholder="Paste a key"></label>
+      </details>
+    </form>
+    <div id="ws-out" class="ws-out" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="section stone" id="ws-how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label">How it ranks</p><h2>Fit first,<br>then safety</h2></div>
+      <p>Fit is the share of similar recent papers a venue published, measured with OpenAlex search relevance (the method of the JANE tool, applied across all fields). For journals, a quarter of the score comes from the h-index. Every journal then goes through JournalCheck's registry rules: listed high-risk journals are removed and sudden output jumps are flagged. Conference deadlines, ranks and acceptance rates come from the community-maintained <a href="https://github.com/ccfddl/ccf-deadlines" rel="noopener">ccfddl</a> list, so they cover computer science only. A fit score is a starting point: read the venue's scope and recent issues before you submit.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-mark" aria-hidden="true">JournalCheck.</p>
+    <div class="foot-row"><span class="label">Open source · MIT &amp; CC BY 4.0 · 2026</span><a class="ghost sm" href="https://github.com/journalcheck/journalcheck">github.com/journalcheck/journalcheck <span aria-hidden="true">↗</span></a><a class="ghost sm" href="#main">Back to top <span aria-hidden="true">↑</span></a></div>
+  </div>
+</footer>
+
+<script src="assets/submit.js?v=20261104b" defer></script>
+<script src="assets/motion.js?v=20261104b" defer></script>
+</body>
+</html>
