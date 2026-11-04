@@ -42,7 +42,7 @@
     <h1 class="display">Where should<br>this paper go?</h1>
     <div class="ws-intro">
       <p class="lead">Upload your paper or type its title and abstract. JournalCheck finds the journals and computer-science conferences that published the most similar work in the last five years, shows their fees and next deadlines, and drops any journal that fails its safety checks.</p>
-      <p class="small ws-privacy"><b>Your paper stays on your device.</b> The PDF is read in your browser; only a few search terms are sent to OpenAlex.</p>
+      <p class="small ws-privacy"><b>Your PDF stays on your device.</b> It is read in your browser. Only the title, abstract and keywords you see in the form are sent to OpenAlex to find similar papers.</p>
     </div>
   </div>
 </section>
@@ -72,7 +72,7 @@
         <button class="pill solid" id="ws-go" type="submit">Find venues <span aria-hidden="true">→</span></button>
       </div>
       <details class="more ws-adv"><summary>Options <span aria-hidden="true">→</span></summary>
-        <label class="fld"><span>OpenAlex API key <em>(optional; free at openalex.org, raises the daily search allowance; kept in this browser only)</em></span><input id="ws-key" placeholder="Paste a key"></label>
+        <label class="fld"><span>OpenAlex API key <em>(free at openalex.org/settings/api; recommended on shared networks such as a campus, where everyone shares one small daily allowance; kept in this browser only)</em></span><input id="ws-key" placeholder="Paste a key"></label>
       </details>
     </form>
     <div id="ws-out" class="ws-out" aria-live="polite"></div>
