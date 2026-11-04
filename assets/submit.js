@@ -196,6 +196,8 @@
       const sc = screen(s), f = fee(s);
       return { kind: "journal", s, v, cnt, scope: sc0, fit, score: 0.85 * fit + 0.15 * quality - (sc.level === "cau" ? 0.08 : 0), screen: sc, fee: f };
     }).filter((j) => j.screen.level !== "high")
+      // a venue whose published topics barely overlap the paper's subject areas is out of scope
+      .filter((j) => j.scope == null || j.scope >= 0.12)
       .filter((j) => !opt.oaOnly || j.s.is_oa)
       .filter((j) => opt.maxFee == null || j.fee.usd == null || j.fee.usd <= opt.maxFee)
       .sort((a, b) => b.score - a.score).slice(0, 10);
