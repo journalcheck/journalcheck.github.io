@@ -6,85 +6,142 @@
 <title>JournalCheck: predatory and hijacked journal checker</title>
 <meta name="description" content="JournalCheck checks a journal against 21 indicators from OpenAlex, Crossref, DOAJ, domain records, its website and public lists, then gives an explained verdict: Low risk, Caution or High risk. Includes a labelled dataset of 108 journals.">
 <meta name="color-scheme" content="light">
+<meta name="theme-color" content="#e5e4e0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231F3A5F'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+  /* enable scroll motion only when the reader allows it; fall back to static if motion.js fails */
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("motion");
+    setTimeout(function () { if (!window.__motionReady) document.documentElement.classList.remove("motion"); }, 2500);
+  }
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e5e4e0'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%231d1d1d' stroke-width='2'/%3E%3Cpath d='M11 16.5l3.5 3.5L21.5 12' stroke='%231d1d1d' stroke-width='2.4' fill='none' stroke-linecap='square'/%3E%3C/svg%3E">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+
 <header class="topbar">
   <div class="wrap topbar-in">
-    <a class="brand" href="#top" aria-label="JournalCheck home">
-      <span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7"/><path d="M9 16.5l4.5 4.5L23 11"/></svg></span>
-      JournalCheck
-    </a>
+    <a class="brand" href="#top" aria-label="JournalCheck home">JournalCheck<span class="dot-mark">.</span></a>
     <nav class="nav" aria-label="Sections">
-      <a href="#check">Check a journal</a>
+      <a href="#check">Check</a>
       <a href="#dataset">Dataset</a>
       <a href="#how">How it works</a>
       <a href="#results">Results</a>
       <a href="#run">Run it</a>
-      <a class="gh" href="https://github.com/journalcheck/journalcheck" rel="noopener">GitHub</a>
+      <a class="gh" href="https://github.com/journalcheck/journalcheck" rel="noopener">GitHub ↗</a>
     </nav>
   </div>
 </header>
 
 <main id="main">
+
+<!-- HERO ─────────────────────────────────────────────── -->
 <section class="hero" id="top">
-  <div class="wrap hero-in">
-    <div class="hero-text">
-      <p class="eyebrow">B.Tech major project · Woxsen University · 2026</p>
-      <h1>Check a journal before you send it your paper.</h1>
-      <p class="lead">JournalCheck tests a journal against <strong>21 indicators</strong> drawn from OpenAlex, Crossref, DOAJ, domain records, the journal's own website and public lists. A rule engine and a machine-learning model score the same evidence, and every verdict shows the evidence behind it.</p>
-      <div class="cta">
-        <a class="btn primary" href="#check">Check a journal</a>
-        <a class="btn" href="#dataset">Browse the 108-journal dataset</a>
-      </div>
-    </div>
-    <aside class="hero-card" aria-label="Example verdict">
-      <div class="hc-head"><span class="mono">ISSN 2395-0056</span><span class="chip v-high">High risk</span></div>
-      <p class="hc-title">International Research Journal of Engineering and Technology</p>
-      <div class="hc-score"><span class="big">20</span><span class="of">/ 100 trust</span></div>
-      <ul class="hc-list">
-        <li><span class="dot fail"></span>ISSN has no OpenAlex or Crossref record</li>
-        <li><span class="dot fail"></span>Shows an unofficial "impact factor"</li>
-        <li><span class="dot fail"></span>Promises publication "in 3 days"</li>
-        <li><span class="dot fail"></span>Sells certificates and hard copies</li>
-      </ul>
-      <a class="hc-link" href="#journal/M09">Open the full evidence report →</a>
-    </aside>
+  <div class="sphere-wrap" aria-hidden="true">
+    <svg class="rings" viewBox="0 0 1000 1000"><circle cx="500" cy="500" r="330"/><circle cx="500" cy="500" r="410"/><circle cx="500" cy="500" r="495"/></svg>
+    <div class="sphere"></div>
   </div>
-  <div class="wrap stats" id="stats" aria-label="Key results">
-    <div class="stat"><span class="sv">0.93</span><span class="lbl">F1 score of the hybrid in cross-validation</span></div>
-    <div class="stat"><span class="sv">12 / 13</span><span class="lbl">verdicts agree with the mini project's manual checks</span></div>
-    <div class="stat"><span class="sv">15 / 15</span><span class="lbl">live hijacked clones caught</span></div>
-    <div class="stat"><span class="sv">108</span><span class="lbl">labelled journals, published here</span></div>
+  <div class="wrap hero-in">
+    <p class="label">Open-source journal checker — Est. 2026</p>
+    <h1 class="display">Check a journal<br>before you<br>send it your<br>paper.</h1>
+    <div class="hero-foot">
+      <div class="hero-copy">
+        <p class="lead">JournalCheck tests a journal against <strong>21 indicators</strong> drawn from OpenAlex, Crossref, DOAJ, domain records, the journal's own website and public lists. A rule engine and a machine-learning model score the same evidence, and every verdict shows the evidence behind it.</p>
+        <div class="cta">
+          <a class="ghost" href="#check">Check a journal <span aria-hidden="true">→</span></a>
+          <a class="ghost" href="#dataset">Browse the 108-journal dataset <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <aside class="hero-card" aria-label="Example verdict">
+        <div class="hc-head"><span class="label">Example verdict · ISSN 2395-0056</span><span class="chip v-high">High risk</span></div>
+        <p class="hc-title">International Research Journal of Engineering and Technology</p>
+        <div class="hc-score"><span class="big">20</span><span class="of">/ 100 trust</span></div>
+        <ul class="hc-list">
+          <li><span class="dot fail"></span>ISSN has no OpenAlex or Crossref record</li>
+          <li><span class="dot fail"></span>Shows an unofficial "impact factor"</li>
+          <li><span class="dot fail"></span>Promises publication "in 3 days"</li>
+          <li><span class="dot fail"></span>Sells certificates and hard copies</li>
+        </ul>
+        <a class="ghost sm" href="#journal/M09">Open the full evidence report <span aria-hidden="true">→</span></a>
+      </aside>
+    </div>
+  </div>
+  <a class="scroll" href="#numbers" aria-label="Scroll to results">Scroll <span aria-hidden="true">↓</span></a>
+</section>
+
+<!-- NUMBERS ─────────────────────────────────────────── -->
+<section class="band" id="numbers">
+  <div class="wrap">
+    <div class="stats" id="stats" aria-label="Key results">
+      <div class="stat"><span class="sv">0.93</span><span class="lbl">F1 score of the hybrid in cross-validation</span></div>
+      <div class="stat"><span class="sv">12/13</span><span class="lbl">verdicts agree with independent manual checks</span></div>
+      <div class="stat"><span class="sv">15/15</span><span class="lbl">live hijacked clones caught</span></div>
+      <div class="stat"><span class="sv">108</span><span class="lbl">labelled journals, published here</span></div>
+    </div>
   </div>
 </section>
 
+<!-- INTRO + SOURCES ─────────────────────────────────── -->
+<section class="section" id="about-tool">
+  <div class="wrap intro">
+    <div class="intro-l">
+      <p class="label">What it is</p>
+      <p class="intro-statement">A triage aid for students and researchers. It turns a 20-criterion manual checklist into an automated, explainable framework.</p>
+      <a class="ghost" href="#how">How it works <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="intro-r">
+      <p>Predatory and hijacked journals copy the look of real ones: a borrowed ISSN, an invented impact factor, a look-alike domain. JournalCheck gathers evidence from nine automated sources, scores it twice (once with transparent rules, once with a trained model) and reports a verdict of <b>Low risk</b>, <b>Caution</b> or <b>High risk</b>, never "predatory". A person always has the last word.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="label sources-label">Evidence sources</p>
+    <ul class="sources" aria-label="Evidence sources">
+      <li><b>OpenAlex</b><span>Registry</span></li>
+      <li><b>Crossref</b><span>Registry</span></li>
+      <li><b>DOAJ</b><span>Open-access index</span></li>
+      <li><b>RDAP</b><span>Domain records</span></li>
+      <li><b>Journal website</b><span>Wording &amp; policies</span></li>
+      <li><b>Retraction Watch</b><span>Hijacked Journal Checker</span></li>
+      <li><b>Beall's list</b><span>Archive</span></li>
+      <li><b>SCImago</b><span>Journal rank</span></li>
+      <li><b>Retraction Watch</b><span>Retractions database</span></li>
+      <li><b>M1–M5</b><span>Human reviewer</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 01 CHECK ────────────────────────────────────────── -->
 <section class="section" id="check">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Check a journal</h2>
+      <div><p class="label">01 — Live check</p><h2>Check a<br>journal</h2></div>
       <p>Your browser asks OpenAlex, Crossref and DOAJ directly and applies the framework's registry rules. That covers up to 9 of the 21 indicators. The checks on the website's wording, the public lists and the model need the full tool (<a href="#run">run it on your computer</a>).</p>
     </div>
     <form class="checkform" id="checkform" autocomplete="off">
       <label class="fld"><span>ISSN</span><input id="f-issn" name="issn" inputmode="text" placeholder="e.g. 2395-0056" required maxlength="12"></label>
       <label class="fld grow"><span>Website you were sent to <em>(optional, enables the clone checks I3 and I4)</em></span><input id="f-url" name="url" type="text" placeholder="e.g. https://www.example-journal.org"></label>
-      <button class="btn primary" type="submit" id="f-go">Check</button>
+      <button class="pill solid" type="submit" id="f-go">Check <span aria-hidden="true">→</span></button>
     </form>
-    <div class="examples">Try: <button type="button" data-issn="1877-0509">Procedia Computer Science</button><button type="button" data-issn="2395-0056">IRJET</button><button type="button" data-issn="1517-4492" data-url="https://www.periodicos.ulbra.org/index.php/acta/index">Acta Scientiae + a look-alike site</button></div>
+    <div class="examples">
+      <div class="ex-group"><span class="label">Genuine</span><button type="button" data-issn="2169-3536">IEEE Access</button><button type="button" data-issn="2475-9066">J. Open Source Software</button><button type="button" data-issn="1877-0509">Procedia Computer Science</button></div>
+      <div class="ex-group"><span class="label">No registry record</span><button type="button" data-issn="2395-0056">IRJET</button><button type="button" data-issn="2394-3785">IJARTET</button></div>
+      <div class="ex-group"><span class="label">Look-alike site</span><button type="button" data-issn="1517-4492" data-url="https://www.periodicos.ulbra.org/index.php/acta/index">Acta Scientiae clone</button><button type="button" data-issn="0378-1844" data-url="https://intercienciajournal.com/">Interciencia clone</button><button type="button" data-issn="0352-3608" data-url="https://druzboslovne-razprave.org/">Družboslovne razprave clone</button></div>
+      <div class="ex-group"><span class="label">Known blind spot</span><button type="button" data-issn="2278-0181">IJERT</button></div>
+    </div>
     <div id="check-out" class="check-out" aria-live="polite"></div>
   </div>
 </section>
 
-<section class="section alt" id="dataset">
+<!-- 02 DATASET ──────────────────────────────────────── -->
+<section class="section stone" id="dataset">
   <div class="wrap">
     <div class="sec-head">
-      <h2>The dataset</h2>
-      <p>108 journals labelled from independent sources: legitimate journals sampled from OpenAlex core sources, DOAJ and Indian Scopus titles; predatory journals from the Beall's list archive; hijacked clones from the Retraction Watch Hijacked Journal Checker; and the 13 journals checked by hand in the mini project, kept aside as an external test. Select a journal to see its evidence report.</p>
+      <div><p class="label">02 — Open data</p><h2>The<br>dataset</h2></div>
+      <p>108 journals labelled from independent sources: legitimate journals sampled from OpenAlex core sources, DOAJ and Indian Scopus titles; predatory journals from the Beall's list archive; hijacked clones from the Retraction Watch Hijacked Journal Checker; and 13 journals checked by hand against a 20-criterion checklist, kept aside as an external test. Select a journal to see its evidence report.</p>
     </div>
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Filter by class" id="seg-label"></div>
@@ -114,89 +171,269 @@
   </div>
 </section>
 
+<!-- 03 HOW ──────────────────────────────────────────── -->
 <section class="section" id="how">
   <div class="wrap">
     <div class="sec-head">
-      <h2>How it works</h2>
+      <div><p class="label">03 — Method</p><h2>How it<br>works</h2></div>
       <p>Six layers turn a journal into a verdict. The collectors gather evidence; the indicators turn it into pass, fail or "not checked"; two scorers judge the same evidence independently; decision rules and a person have the last word.</p>
     </div>
-    <figure class="fig"><img src="img/pipeline.webp" width="1600" height="1232" loading="lazy" alt="Pipeline: input, collect, extract 21 indicators, score with rules and a model, decide with bands and overrides, report and human review."><figcaption>From an ISSN, title or website to an explained verdict.</figcaption></figure>
-    <div class="steps">
-      <div class="step"><span class="n">1</span><h3>Rule score</h3><p>Each indicator earns its points on a pass, nothing on a fail and half when it cannot be checked. Points earned out of 40, as a percentage.</p></div>
-      <div class="step"><span class="n">2</span><h3>Model score</h3><p>A logistic-regression model trained on the labelled journals estimates the chance of high risk from 17 indicators and 14 numbers. Model score = 100 − that chance.</p></div>
-      <div class="step"><span class="n">3</span><h3>Trust score</h3><p>The average of the two. <b class="t-low">80 or more: Low risk.</b> <b class="t-cau">50–79: Caution.</b> <b class="t-high">Below 50: High risk.</b></p></div>
-      <div class="step"><span class="n">4</span><h3>Overrides</h3><p>Decisive evidence replaces the band: a listed clone (K1), a court finding (K2) or a false indexing claim (K3) means High risk. An integrity alert caps the verdict at Caution.</p></div>
-      <div class="step"><span class="n">5</span><h3>Human review</h3><p>A person checks any Caution, any override, a 30-point disagreement between the scorers, evidence coverage below 60% or a possible clone.</p></div>
-      <div class="step"><span class="n">6</span><h3>Evidence report</h3><p>Every verdict comes with the evidence for each indicator, the model's main factors and five manual checks (M1–M5) for the reviewer.</p></div>
-    </div>
-    <h3 class="sub">The 21 indicators</h3>
+    <ol class="pipe" aria-label="The six layers of JournalCheck">
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">01</span><h3>Input</h3><p class="label">One of three</p></div>
+        <div class="pipe-cells c2">
+          <div class="pc"><h4>A journal to check</h4><p>Its ISSN, its title, or the website address the author was sent.</p><div class="tags"><span>ISSN</span><span>Title</span><span>URL</span></div></div>
+          <div class="pc quiet"><p class="arrow-note"><span aria-hidden="true">→</span> The ISSN is found on the website or looked up in OpenAlex, so every later step works from the same identity.</p></div>
+        </div>
+      </li>
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">02</span><h3>Collect</h3><p class="label">In parallel</p></div>
+        <div class="pipe-cells c4">
+          <div class="pc"><span class="pc-k">Registries</span><h4>OpenAlex · Crossref · DOAJ</h4><p>Title, homepage, output, citations and licence records.</p></div>
+          <div class="pc"><span class="pc-k">Domain record</span><h4>RDAP</h4><p>The date the website's domain was registered.</p></div>
+          <div class="pc"><span class="pc-k">Website</span><h4>Home + 3 pages</h4><p>Claims, policies, fees and contacts, read as text.</p></div>
+          <div class="pc"><span class="pc-k">Public lists</span><h4>Snapshots</h4><p>Hijacked clones, Beall's archive, SCImago, retractions.</p></div>
+        </div>
+      </li>
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">03</span><h3>Extract</h3><p class="label">Evidence → signals</p></div>
+        <div class="pipe-cells c2">
+          <div class="pc big"><span class="pc-num" data-count="21">21</span><div><h4>Indicators</h4><p>Each one passes, fails or is "not checked". Together they are worth 40 points.</p></div></div>
+          <div class="pc big"><span class="pc-num" data-count="14">14</span><div><h4>Numeric features</h4><p>Output per year, journal age, citations per paper and more, for the model.</p></div></div>
+        </div>
+      </li>
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">04</span><h3>Score</h3><p class="label">Independently</p></div>
+        <div class="pipe-cells c2">
+          <div class="pc"><span class="pc-k">Scorer A</span><h4>Rule engine</h4><p>Adds up the points of the 21 indicators: full points on a pass, none on a fail, half when it cannot be checked. Points out of 40, as a score from 0 to 100.</p></div>
+          <div class="pc"><span class="pc-k">Scorer B</span><h4>Machine-learning model</h4><p>Logistic regression on behaviour only (17 indicators and 14 numbers, no list membership, no country or language). Model score = 100 − the chance of high risk.</p></div>
+        </div>
+      </li>
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">05</span><h3>Decide</h3><p class="label">Bands, then overrides</p></div>
+        <div class="pipe-cells c2">
+          <div class="pc"><span class="pc-k">Trust score</span><h4>Average of the two scores</h4>
+            <p>Trust = ½ × rule score + ½ × model score, then placed in a band.</p>
+            <div class="bands" aria-label="Trust score bands">
+              <div class="band-track"><i class="b-high"></i><i class="b-cau"></i><i class="b-low"></i></div>
+              <div class="band-ticks"><span style="left:0">0</span><span style="left:50%">50</span><span style="left:80%">80</span><span style="left:100%">100</span></div>
+              <div class="band-names"><span class="chip v-high">High risk</span><span class="chip v-cau">Caution</span><span class="chip v-low">Low risk</span></div>
+            </div>
+          </div>
+          <div class="pc"><span class="pc-k">Overrides</span><h4>Decisive evidence wins</h4>
+            <ul class="ovr">
+              <li><b>K1</b>Listed or detected clone<span>→ High risk</span></li>
+              <li><b>K2</b>Court or regulator finding<span>→ High risk</span></li>
+              <li><b>K3</b>False indexing claim<span>→ High risk</span></li>
+              <li><b>I21</b>Integrity alert<span>→ at most Caution</span></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li class="pipe-row">
+        <div class="pipe-step"><span class="pipe-n">06</span><h3>Report</h3><p class="label">And review</p></div>
+        <div class="pipe-cells c2">
+          <div class="pc"><span class="pc-k">Output</span><h4>Evidence report</h4><p>Every point is shown with the evidence behind it, plus the model's main factors. Downloadable as HTML or Markdown.</p><a class="ghost sm" href="#journal/M09">See an example <span aria-hidden="true">→</span></a></div>
+          <div class="pc stone"><span class="pc-k">A person decides</span><h4>Human review</h4><p>Required for any Caution, any override, a 30-point gap between the scorers, evidence coverage below 60% or a possible clone. The reviewer completes five manual checks (M1–M5).</p></div>
+        </div>
+      </li>
+    </ol>
+    <div class="sub-head"><p class="label">The framework</p><h3 class="sub">The 21 indicators</h3></div>
     <div class="cats" id="cats"></div>
-    <details class="more"><summary>The five checks only a person can do</summary><ol id="manual"></ol></details>
+    <details class="more"><summary>The five checks only a person can do <span aria-hidden="true">→</span></summary><ol id="manual"></ol></details>
   </div>
 </section>
 
-<section class="section alt" id="results">
+<!-- 04 RESULTS ──────────────────────────────────────── -->
+<section class="section rings-sec" id="results">
+  <svg class="rings side" viewBox="0 0 1000 1000" aria-hidden="true"><circle cx="500" cy="500" r="330"/><circle cx="500" cy="500" r="410"/><circle cx="500" cy="500" r="495"/></svg>
   <div class="wrap">
     <div class="sec-head">
-      <h2>Results</h2>
-      <p>Ten repeats of five-fold cross-validation on the 95 training journals, then an external test on the 13 mini-project journals. "Flagged" means any verdict other than Low risk.</p>
+      <div><p class="label">04 — Evaluation</p><h2>Results</h2></div>
+      <p>Ten repeats of five-fold cross-validation on the 95 training journals, then an external test on 13 journals checked by hand. "Flagged" means any verdict other than Low risk.</p>
     </div>
     <div class="tablewrap"><table class="mtable" id="mtable"><thead><tr><th>Set-up</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">ROC-AUC</th><th class="num">Legitimate flagged</th><th class="num">High risk missed</th></tr></thead><tbody></tbody></table></div>
     <div class="gallery">
-      <figure class="fig"><img src="img/external-test.webp" width="1600" height="982" loading="lazy" alt="Scores and verdicts for the 13 mini-project journals against the manual verdicts; 12 of 13 agree."><figcaption>External test: 12 of 13 verdicts match the manual checks (Cohen's κ 0.87). The one miss is IJERT, rated Low risk.</figcaption></figure>
-      <figure class="fig"><img src="img/identity-evidence.webp" width="1600" height="588" loading="lazy" alt="Identity evidence on 15 live clones and 46 legitimate journals."><figcaption>Hijacked clones are caught by the list check (15 of 15). Identity checks alone catch fewer, so the list matters.</figcaption></figure>
-      <figure class="fig"><img src="img/vs-public-lists.webp" width="1600" height="790" loading="lazy" alt="JournalCheck compared with single public lists on the 95 training journals."><figcaption>JournalCheck against single public lists on the training journals.</figcaption></figure>
-      <figure class="fig"><img src="img/how-to-act.webp" width="1600" height="660" loading="lazy" alt="What a student should do for each verdict: Low risk, Caution, High risk."><figcaption>How to act on each verdict. JournalCheck is a triage aid, not a blacklist.</figcaption></figure>
+    <figure class="fig chart" id="fig-external" aria-labelledby="cap-ext">
+      <div class="xt">
+        <div class="xt-head" aria-hidden="true"><span></span><span class="xt-bands"><b class="high" style="--l:0;--r:50%">High risk</b><b class="cau" style="--l:50%;--r:30%">Caution</b><b class="low" style="--l:80%;--r:20%">Low</b></span><span>Manual</span><span>Match</span></div>
+        <ol class="xt-rows">
+        <li class="xt-row" style="--i:0" tabindex="0" data-tip="IEEE Access — rules 94, model 100, trust 97: Low risk. Manual check: Low risk." aria-label="IEEE Access — rules 94, model 100, trust 97: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M01">IEEE Access</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:93.8%;--b:100.0%"></i><i class="xt-mk sq" style="--x:93.8%"></i><i class="xt-mk tri" style="--x:100.0%"></i><i class="xt-mk dot low" style="--x:96.9%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:1" tabindex="0" data-tip="Expert Systems with Applications — rules 79, model 100, trust 89: Low risk. Manual check: Low risk." aria-label="Expert Systems with Applications — rules 79, model 100, trust 89: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M02">Expert Syst. with Applications</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:78.8%;--b:100.0%"></i><i class="xt-mk sq" style="--x:78.8%"></i><i class="xt-mk tri" style="--x:100.0%"></i><i class="xt-mk dot low" style="--x:89.4%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:2" tabindex="0" data-tip="PeerJ Computer Science — rules 86, model 100, trust 93: Low risk. Manual check: Low risk." aria-label="PeerJ Computer Science — rules 86, model 100, trust 93: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M03">PeerJ Computer Science</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:86.2%;--b:99.7%"></i><i class="xt-mk sq" style="--x:86.2%"></i><i class="xt-mk tri" style="--x:99.7%"></i><i class="xt-mk dot low" style="--x:93.0%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:3" tabindex="0" data-tip="Sādhanā — rules 99, model 100, trust 99: Low risk. Manual check: Low risk." aria-label="Sādhanā — rules 99, model 100, trust 99: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M04">Sādhanā</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:98.8%;--b:99.8%"></i><i class="xt-mk sq" style="--x:98.8%"></i><i class="xt-mk tri" style="--x:99.8%"></i><i class="xt-mk dot low" style="--x:99.3%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:4" tabindex="0" data-tip="J. Machine Learning Research — rules 86, model 96, trust 91: Low risk. Manual check: Low risk." aria-label="J. Machine Learning Research — rules 86, model 96, trust 91: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M05">J. Mach. Learning Research</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:86.2%;--b:96.3%"></i><i class="xt-mk sq" style="--x:86.2%"></i><i class="xt-mk tri" style="--x:96.3%"></i><i class="xt-mk dot low" style="--x:91.3%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:5" tabindex="0" data-tip="J. Open Source Software — rules 100, model 99, trust 100: Low risk. Manual check: Low risk." aria-label="J. Open Source Software — rules 100, model 99, trust 100: Low risk. Manual check: Low risk.">
+          <span class="xt-name"><a href="#journal/M06">J. Open Source Software</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:99.1%;--b:100.0%"></i><i class="xt-mk sq" style="--x:100.0%"></i><i class="xt-mk tri" style="--x:99.1%"></i><i class="xt-mk dot low" style="--x:99.5%"></i></span>
+          <span class="xt-man"><span class="chip v-low">Low</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:6" tabindex="0" data-tip="Comput. Intell. &amp; Neuroscience — rules 59, model 100, trust 79: Caution. Manual check: Caution." aria-label="Comput. Intell. &amp; Neuroscience — rules 59, model 100, trust 79: Caution. Manual check: Caution.">
+          <span class="xt-name"><a href="#journal/M07">Comput. Intell. Neurosci.</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:58.8%;--b:99.5%"></i><i class="xt-mk sq" style="--x:58.8%"></i><i class="xt-mk tri" style="--x:99.5%"></i><i class="xt-mk dot cau" style="--x:79.1%"></i></span>
+          <span class="xt-man"><span class="chip v-cau">Caution</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row miss" style="--i:7" tabindex="0" data-tip="IJERT — rules 70, model 100, trust 85: Low risk. Manual check: High risk." aria-label="IJERT — rules 70, model 100, trust 85: Low risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M08">IJERT</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:70.0%;--b:100.0%"></i><i class="xt-mk sq" style="--x:70.0%"></i><i class="xt-mk tri" style="--x:100.0%"></i><i class="xt-mk dot low" style="--x:85.0%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✕</span>
+        </li><li class="xt-row" style="--i:8" tabindex="0" data-tip="IRJET — rules 40, model 0, trust 20: High risk. Manual check: High risk." aria-label="IRJET — rules 40, model 0, trust 20: High risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M09">IRJET</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:0.0%;--b:40.0%"></i><i class="xt-mk sq" style="--x:40.0%"></i><i class="xt-mk tri" style="--x:0.0%"></i><i class="xt-mk dot high" style="--x:20.0%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:9" tabindex="0" data-tip="J. Comp. Sci. &amp; Syst. Biology — rules 59, model 68, trust 64: High risk. Manual check: High risk." aria-label="J. Comp. Sci. &amp; Syst. Biology — rules 59, model 68, trust 64: High risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M10">J. Comp. Sci. Syst. Biol.</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:58.8%;--b:68.4%"></i><i class="xt-mk sq" style="--x:58.8%"></i><i class="xt-mk tri" style="--x:68.4%"></i><i class="xt-mk dot high" style="--x:63.6%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:10" tabindex="0" data-tip="WASET — rules 52, model 2, trust 27: High risk. Manual check: High risk." aria-label="WASET — rules 52, model 2, trust 27: High risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M11">WASET</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:2.2%;--b:52.5%"></i><i class="xt-mk sq" style="--x:52.5%"></i><i class="xt-mk tri" style="--x:2.2%"></i><i class="xt-mk dot high" style="--x:27.3%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:11" tabindex="0" data-tip="Seybold Report (clone) — rules 64, model 0, trust 32: High risk. Manual check: High risk." aria-label="Seybold Report (clone) — rules 64, model 0, trust 32: High risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M12">Seybold Report (clone)</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:0.4%;--b:63.8%"></i><i class="xt-mk sq" style="--x:63.8%"></i><i class="xt-mk tri" style="--x:0.4%"></i><i class="xt-mk dot high" style="--x:32.1%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li><li class="xt-row" style="--i:12" tabindex="0" data-tip="Annals Rom. Soc. Cell Biol. (clone) — rules 64, model 1, trust 32: High risk. Manual check: High risk." aria-label="Annals Rom. Soc. Cell Biol. (clone) — rules 64, model 1, trust 32: High risk. Manual check: High risk.">
+          <span class="xt-name"><a href="#journal/M13">Annals RSCB (clone)</a></span>
+          <span class="xt-track"><i class="xt-link" style="--a:1.0%;--b:63.8%"></i><i class="xt-mk sq" style="--x:63.8%"></i><i class="xt-mk tri" style="--x:1.0%"></i><i class="xt-mk dot high" style="--x:32.4%"></i></span>
+          <span class="xt-man"><span class="chip v-high">High</span></span>
+          <span class="xt-ok" aria-hidden="true">✓</span>
+        </li>
+        </ol>
+        <div class="xt-axis" aria-hidden="true"><span></span><span class="xt-ticks"><i style="left:0%">0</i><i style="left:20%">20</i><i style="left:40%">40</i><i style="left:60%">60</i><i style="left:80%">80</i><i style="left:100%">100</i></span><span></span><span></span></div>
+        <div class="legend-row" aria-hidden="true"><span><i class="xt-mk sq static"></i>Rule score</span><span><i class="xt-mk tri static"></i>Model score</span><span><i class="xt-mk dot static ink"></i>Trust score, coloured by verdict</span></div>
+      </div>
+      <figcaption id="cap-ext"><span class="label">Fig. 2</span>External test: 12 of 13 verdicts match the manual checks (Cohen's κ 0.87). The one miss is IJERT, rated Low risk.</figcaption>
+    </figure>
+    <figure class="fig chart" id="fig-identity" aria-labelledby="cap-fig-identity">
+      <div class="legend-row"><span><i class="sw s-hij"></i>Live clones caught</span><span><i class="sw s-leg"></i>Legitimate journals flagged</span></div>
+      <ol class="hb"><li class="hb-group"><span class="hb-label">Listed on the Hijacked Journal Checker (I19)</span><ul class="hb-bars"><li class="hb-bar s-hij" style="--w:100.00%;--i:0" data-tip="Listed on the Hijacked Journal Checker (I19) — Live clones caught: 15 of 15 (100%)" aria-label="Listed on the Hijacked Journal Checker (I19) — Live clones caught: 15 of 15 (100%)"><i></i><span class="hb-v">15 of 15</span></li><li class="hb-bar s-leg" style="--w:0.00%;--i:1" data-tip="Listed on the Hijacked Journal Checker (I19) — Legitimate journals flagged: 0 of 46 (0%)" aria-label="Listed on the Hijacked Journal Checker (I19) — Legitimate journals flagged: 0 of 46 (0%)"><i></i><span class="hb-v">0 of 46</span></li></ul></li><li class="hb-group"><span class="hb-label">No registered ISSN found (I1)</span><ul class="hb-bars"><li class="hb-bar s-hij" style="--w:46.67%;--i:2" data-tip="No registered ISSN found (I1) — Live clones caught: 7 of 15 (47%)" aria-label="No registered ISSN found (I1) — Live clones caught: 7 of 15 (47%)"><i></i><span class="hb-v">7 of 15</span></li><li class="hb-bar s-leg" style="--w:0.00%;--i:3" data-tip="No registered ISSN found (I1) — Legitimate journals flagged: 0 of 46 (0%)" aria-label="No registered ISSN found (I1) — Legitimate journals flagged: 0 of 46 (0%)"><i></i><span class="hb-v">0 of 46</span></li></ul></li><li class="hb-group"><span class="hb-label">Different domain, registered late (I3 and I4)</span><ul class="hb-bars"><li class="hb-bar s-hij" style="--w:20.00%;--i:4" data-tip="Different domain, registered late (I3 and I4) — Live clones caught: 3 of 15 (20%)" aria-label="Different domain, registered late (I3 and I4) — Live clones caught: 3 of 15 (20%)"><i></i><span class="hb-v">3 of 15</span></li><li class="hb-bar s-leg" style="--w:2.17%;--i:5" data-tip="Different domain, registered late (I3 and I4) — Legitimate journals flagged: 1 of 46 (2%)" aria-label="Different domain, registered late (I3 and I4) — Legitimate journals flagged: 1 of 46 (2%)"><i></i><span class="hb-v">1 of 46</span></li></ul></li><li class="hb-group"><span class="hb-label">Any of I1, I3 or I4 fails</span><ul class="hb-bars"><li class="hb-bar s-hij" style="--w:93.33%;--i:6" data-tip="Any of I1, I3 or I4 fails — Live clones caught: 14 of 15 (93%)" aria-label="Any of I1, I3 or I4 fails — Live clones caught: 14 of 15 (93%)"><i></i><span class="hb-v">14 of 15</span></li><li class="hb-bar s-leg" style="--w:17.39%;--i:7" data-tip="Any of I1, I3 or I4 fails — Legitimate journals flagged: 8 of 46 (17%)" aria-label="Any of I1, I3 or I4 fails — Legitimate journals flagged: 8 of 46 (17%)"><i></i><span class="hb-v">8 of 46</span></li></ul></li></ol>
+      <div class="hb-axis" aria-hidden="true"><span></span><span class="xt-ticks"><i style="left:0%">0%</i><i style="left:25%">25%</i><i style="left:50%">50%</i><i style="left:75%">75%</i><i style="left:100%">100%</i></span></div>
+      
+      <figcaption id="cap-fig-identity"><span class="label">Fig. 3</span>Hijacked clones are caught by the list check (15 of 15). Identity checks alone catch fewer, so the list matters.</figcaption>
+    </figure>
+    <figure class="fig chart" id="fig-lists" aria-labelledby="cap-fig-lists">
+      <div class="legend-row"><span><i class="sw s-leg"></i>Legitimate journals flagged</span><span><i class="sw s-pred"></i>Predatory journals caught</span><span><i class="sw s-hij"></i>Hijacked clones caught</span></div>
+      <ol class="hb"><li class="hb-group"><span class="hb-label">Beall's list archive (I20)</span><ul class="hb-bars"><li class="hb-bar s-leg" style="--w:0.00%;--i:0" data-tip="Beall&#x27;s list archive (I20) — Legitimate journals flagged: 0 of 40 (0%)" aria-label="Beall&#x27;s list archive (I20) — Legitimate journals flagged: 0 of 40 (0%)"><i></i><span class="hb-v">0 of 40</span></li><li class="hb-bar s-pred" style="--w:84.62%;--i:1" data-tip="Beall&#x27;s list archive (I20) — Predatory journals caught: 33 of 39 (85%)" aria-label="Beall&#x27;s list archive (I20) — Predatory journals caught: 33 of 39 (85%)"><i></i><span class="hb-v">33 of 39*</span></li><li class="hb-bar s-hij" style="--w:12.50%;--i:2" data-tip="Beall&#x27;s list archive (I20) — Hijacked clones caught: 2 of 16 (12%)" aria-label="Beall&#x27;s list archive (I20) — Hijacked clones caught: 2 of 16 (12%)"><i></i><span class="hb-v">2 of 16</span></li></ul></li><li class="hb-group"><span class="hb-label">Not in DOAJ or Scopus (I5)</span><ul class="hb-bars"><li class="hb-bar s-leg" style="--w:5.00%;--i:3" data-tip="Not in DOAJ or Scopus (I5) — Legitimate journals flagged: 2 of 40 (5%)" aria-label="Not in DOAJ or Scopus (I5) — Legitimate journals flagged: 2 of 40 (5%)"><i></i><span class="hb-v">2 of 40</span></li><li class="hb-bar s-pred" style="--w:53.85%;--i:4" data-tip="Not in DOAJ or Scopus (I5) — Predatory journals caught: 21 of 39 (54%)" aria-label="Not in DOAJ or Scopus (I5) — Predatory journals caught: 21 of 39 (54%)"><i></i><span class="hb-v">21 of 39</span></li><li class="hb-bar s-hij" style="--w:12.50%;--i:5" data-tip="Not in DOAJ or Scopus (I5) — Hijacked clones caught: 2 of 16 (12%)" aria-label="Not in DOAJ or Scopus (I5) — Hijacked clones caught: 2 of 16 (12%)"><i></i><span class="hb-v">2 of 16</span></li></ul></li><li class="hb-group"><span class="hb-label">Hijacked Journal Checker (I19)</span><ul class="hb-bars"><li class="hb-bar s-leg" style="--w:0.00%;--i:6" data-tip="Hijacked Journal Checker (I19) — Legitimate journals flagged: 0 of 40 (0%)" aria-label="Hijacked Journal Checker (I19) — Legitimate journals flagged: 0 of 40 (0%)"><i></i><span class="hb-v">0 of 40</span></li><li class="hb-bar s-pred" style="--w:0.00%;--i:7" data-tip="Hijacked Journal Checker (I19) — Predatory journals caught: 0 of 39 (0%)" aria-label="Hijacked Journal Checker (I19) — Predatory journals caught: 0 of 39 (0%)"><i></i><span class="hb-v">0 of 39</span></li><li class="hb-bar s-hij" style="--w:81.25%;--i:8" data-tip="Hijacked Journal Checker (I19) — Hijacked clones caught: 13 of 16 (81%)" aria-label="Hijacked Journal Checker (I19) — Hijacked clones caught: 13 of 16 (81%)"><i></i><span class="hb-v">13 of 16</span></li></ul></li><li class="hb-group"><span class="hb-label">Any of the three lists</span><ul class="hb-bars"><li class="hb-bar s-leg" style="--w:5.00%;--i:9" data-tip="Any of the three lists — Legitimate journals flagged: 2 of 40 (5%)" aria-label="Any of the three lists — Legitimate journals flagged: 2 of 40 (5%)"><i></i><span class="hb-v">2 of 40</span></li><li class="hb-bar s-pred" style="--w:87.18%;--i:10" data-tip="Any of the three lists — Predatory journals caught: 34 of 39 (87%)" aria-label="Any of the three lists — Predatory journals caught: 34 of 39 (87%)"><i></i><span class="hb-v">34 of 39*</span></li><li class="hb-bar s-hij" style="--w:81.25%;--i:11" data-tip="Any of the three lists — Hijacked clones caught: 13 of 16 (81%)" aria-label="Any of the three lists — Hijacked clones caught: 13 of 16 (81%)"><i></i><span class="hb-v">13 of 16</span></li></ul></li><li class="hb-group"><span class="hb-label">JournalCheck hybrid</span><ul class="hb-bars"><li class="hb-bar s-leg" style="--w:20.00%;--i:12" data-tip="JournalCheck hybrid — Legitimate journals flagged: 8 of 40 (20%)" aria-label="JournalCheck hybrid — Legitimate journals flagged: 8 of 40 (20%)"><i></i><span class="hb-v">8 of 40</span></li><li class="hb-bar s-pred" style="--w:89.74%;--i:13" data-tip="JournalCheck hybrid — Predatory journals caught: 35 of 39 (90%)" aria-label="JournalCheck hybrid — Predatory journals caught: 35 of 39 (90%)"><i></i><span class="hb-v">35 of 39</span></li><li class="hb-bar s-hij" style="--w:100.00%;--i:14" data-tip="JournalCheck hybrid — Hijacked clones caught: 16 of 16 (100%)" aria-label="JournalCheck hybrid — Hijacked clones caught: 16 of 16 (100%)"><i></i><span class="hb-v">16 of 16</span></li></ul></li></ol>
+      <div class="hb-axis" aria-hidden="true"><span></span><span class="xt-ticks"><i style="left:0%">0%</i><i style="left:25%">25%</i><i style="left:50%">50%</i><i style="left:75%">75%</i><i style="left:100%">100%</i></span></div>
+      <p class="chart-foot">* By construction: the predatory journals were sampled from the Beall's archive.</p>
+      <figcaption id="cap-fig-lists"><span class="label">Fig. 4</span>JournalCheck against single public lists on the training journals.</figcaption>
+    </figure>
+    <figure class="fig chart" id="fig-act" aria-labelledby="cap-act">
+      <p class="act-top">A reader checks a journal and reads the evidence report <span aria-hidden="true">↓</span></p>
+      <div class="act">
+        <div class="act-col low" style="--i:0"><h4><span class="chip v-low">Low risk</span></h4><p>Skim the report for any failed indicator.</p><p>Do the quick manual checks: are the editors real (M1), are recent articles coherent (M2)?</p><p><b>Then submit</b> if both look right.</p></div>
+        <div class="act-col cau" style="--i:1"><h4><span class="chip v-cau">Caution</span></h4><p>Read every failed and unchecked indicator.</p><p>Complete all five manual checks (M1–M5) and ask a supervisor.</p><p><b>Submit only</b> if the review clears the journal.</p></div>
+        <div class="act-col high" style="--i:2"><h4><span class="chip v-high">High risk</span></h4><p>Find out why: an override (clone, court finding, false claim) is decisive.</p><p>For a score-only verdict, a review can still clear a small or regional journal.</p><p><b>Do not submit</b> unless the review clears it.</p></div>
+      </div>
+      <p class="chart-foot">The verdict is a reason to look closer, not a judgement: JournalCheck never calls a journal "predatory".</p>
+      <figcaption id="cap-act"><span class="label">Fig. 5</span>How to act on each verdict. JournalCheck is a triage aid, not a blacklist.</figcaption>
+    </figure>
     </div>
   </div>
 </section>
 
-<section class="section" id="run">
-  <div class="wrap two">
-    <div>
-      <h2>Run the full tool</h2>
+<!-- 05 RUN ──────────────────────────────────────────── -->
+<section class="section stone" id="run">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label">05 — Open source</p><h2>Run it</h2></div>
       <p>The full check reads the journal's website, the public lists and the trained model, and opens in your browser as a small web app. It needs Python 3.10 or newer.</p>
-<pre class="code"><code>git clone https://github.com/journalcheck/journalcheck
+    </div>
+    <div class="two">
+      <div class="panel">
+        <h3>Run the full tool</h3>
+<div class="codebox"><pre class="code"><code>git clone https://github.com/journalcheck/journalcheck
 cd journalcheck
 python3 -m venv .venv &amp;&amp; source .venv/bin/activate
 pip install -r requirements.txt
-python scripts/build_lists.py     # download the public lists
-streamlit run app.py              # opens http://localhost:8501</code></pre>
-      <p class="small">On Windows use <code>.venv\Scripts\activate</code>. On a Mac you can double-click <code>run_journalcheck.command</code> instead.</p>
+<span class="c"># download the public lists</span>
+python scripts/build_lists.py
+<span class="c"># opens http://localhost:8501</span>
+streamlit run app.py</code></pre></div>
+        <p class="small">On Windows use <code>.venv\Scripts\activate</code>. On a Mac you can double-click <code>run_journalcheck.command</code> instead.</p>
+      </div>
+      <div class="panel">
+        <h3>Reproduce the evaluation</h3>
+<div class="codebox"><pre class="code"><code><span class="c"># labelled sample (seed 42)</span>
+python scripts/build_dataset.py
+<span class="c"># 10 Indian Scopus journals</span>
+python scripts/add_india.py
+<span class="c"># evidence + features.csv</span>
+python scripts/collect.py
+<span class="c"># metrics, models, figures</span>
+python scripts/evaluate.py
+<span class="c"># this website's data</span>
+python scripts/build_site.py</code></pre></div>
+        <p class="small">The evaluation needs only <code>data/features.csv</code>, which is in the repository, so <code>evaluate.py</code> reproduces every number above without going online.</p>
+      </div>
     </div>
-    <div>
-      <h2>Reproduce the evaluation</h2>
-<pre class="code"><code>python scripts/build_dataset.py   # labelled sample (seed 42)
-python scripts/add_india.py       # 10 Indian Scopus journals
-python scripts/collect.py         # evidence + features.csv
-python scripts/evaluate.py        # metrics, models, figures
-python scripts/build_site.py      # this website's data</code></pre>
-      <p class="small">The evaluation needs only <code>data/features.csv</code>, which is in the repository, so <code>evaluate.py</code> reproduces every number above without going online.</p>
-      <ul class="links">
-        <li><a href="https://github.com/journalcheck/journalcheck">Source code and README</a></li>
-        <li><a href="https://github.com/journalcheck/journalcheck/blob/main/journalcheck/config.py">Every weight and threshold (config.py)</a></li>
-        <li><a href="https://github.com/journalcheck/journalcheck/tree/main/results">Results folder</a></li>
-      </ul>
-    </div>
+    <ul class="links">
+      <li><a class="ghost" href="https://github.com/journalcheck/journalcheck">Source code and README <span aria-hidden="true">→</span></a></li>
+      <li><a class="ghost" href="https://github.com/journalcheck/journalcheck/blob/main/journalcheck/config.py">Every weight and threshold (config.py) <span aria-hidden="true">→</span></a></li>
+      <li><a class="ghost" href="https://github.com/journalcheck/journalcheck/tree/main/results">Results folder <span aria-hidden="true">→</span></a></li>
+    </ul>
   </div>
 </section>
 
-<section class="section alt" id="use">
-  <div class="wrap two">
-    <div>
-      <h2>Responsible use</h2>
-      <p>JournalCheck is a triage aid. A High-risk verdict means a person should look at the journal before submitting; it is not a finding that a journal is predatory. Country and language are not used as features, but the error analysis found that Indian legitimate journals were flagged more often (5 of 11, against 3 of 29 others), so a Caution or High-risk verdict on a regional journal deserves a careful human look.</p>
+<!-- 06 USE + ABOUT ──────────────────────────────────── -->
+<section class="section" id="use">
+  <div class="wrap">
+    <div class="intro">
+      <div class="intro-l">
+        <p class="label">06 — Responsible use</p>
+        <p class="intro-statement">A verdict is a reason to look closer, not a finding.</p>
+      </div>
+      <div class="intro-r">
+        <p>JournalCheck is a triage aid. A High-risk verdict means a person should look at the journal before submitting; it is not a finding that a journal is predatory. Country and language are not used as features, but the error analysis found that Indian legitimate journals were flagged more often (5 of 11, against 3 of 29 others), so a Caution or High-risk verdict on a regional journal deserves a careful human look.</p>
+      </div>
     </div>
-    <div>
-      <h2>About</h2>
-      <p>Built by <strong>Rhea Ishani Chemudupati</strong> and <strong>Himanshu Maurya</strong> for the course Research Writing, Intellectual Property and Scholarly Publishing, School of Technology, Woxsen University, under the guidance of <strong>Dr. M. Upendra Kumar</strong>. The project turns the 20-criterion checklist of the team's mini project into an automated, explainable framework.</p>
-      <p class="small">Code: MIT licence. Dataset labels and scores: CC BY 4.0. Public lists are not redistributed; <code>build_lists.py</code> downloads them from their sources.</p>
+    <div class="intro" id="about">
+      <div class="intro-l">
+        <p class="label">07 — Who it's for</p>
+        <p class="intro-statement">Anyone about to trust a journal with their work.</p>
+      </div>
+      <div class="intro-r">
+        <p>JournalCheck is built for the moment before you submit. A student choosing where to send a first paper, a researcher holding an unsolicited "call for papers" email, a supervisor or librarian asked whether a journal is safe. Each gets the same thing: an evidence report they can read, question and share, in place of a yes-or-no answer from a list.</p>
+        <p>It is free and open source, and every weight and threshold is public. Made by <strong>Rhea Ishani Chemudupati</strong> and <strong>Himanshu Maurya</strong>.</p>
+        <p class="small">Code: MIT licence. Dataset labels and scores: CC BY 4.0. Public lists are not redistributed; <code>build_lists.py</code> downloads them from their sources.</p>
+      </div>
     </div>
   </div>
 </section>
 </main>
 
-<footer class="foot"><div class="wrap">JournalCheck · Woxsen University · 2026 · <a href="https://github.com/journalcheck/journalcheck">github.com/journalcheck/journalcheck</a></div></footer>
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-mark" aria-hidden="true">JournalCheck.</p>
+    <div class="foot-row"><span class="label">Open source · MIT &amp; CC BY 4.0 · 2026</span><a class="ghost sm" href="https://github.com/journalcheck/journalcheck">github.com/journalcheck/journalcheck <span aria-hidden="true">↗</span></a><a class="ghost sm" href="#top">Back to top <span aria-hidden="true">↑</span></a></div>
+  </div>
+</footer>
 
 <dialog id="report" aria-labelledby="r-title">
   <div class="r-in">
@@ -206,5 +443,6 @@ python scripts/build_site.py      # this website's data</code></pre>
 </dialog>
 
 <script src="assets/app.js" defer></script>
+<script src="assets/motion.js" defer></script>
 </body>
 </html>

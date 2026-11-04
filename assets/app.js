@@ -44,7 +44,7 @@
     const pct = (v) => fmt(100 * v, 0) + "%";
     $("#mtable tbody").innerHTML = META.metrics.map((m) => {
       const best = m.setup.startsWith("Hybrid");
-      return `<tr class="${best ? "best" : ""}"><td>${esc(m.setup)}</td><td class="num">${fmt(m.precision_mean, 3)}</td><td class="num">${fmt(m.recall_mean, 3)}</td><td class="num"><b>${fmt(m.f1_mean, 3)}</b> <span class="sd">± ${fmt(m.f1_std, 3)}</span></td><td class="num">${fmt(m.roc_auc_mean, 3)}</td><td class="num">${pct(m.legit_flagged_rate_mean)}</td><td class="num">${pct(m.high_risk_missed_rate_mean)}</td></tr>`;
+      return `<tr class="${best ? "best" : ""}"><td>${esc(m.setup)}</td><td class="num">${fmt(m.precision_mean, 3)}</td><td class="num">${fmt(m.recall_mean, 3)}</td><td class="num"><span class="mbar" aria-hidden="true"><i style="--w:${(100 * m.f1_mean).toFixed(1)}%"></i></span><b>${fmt(m.f1_mean, 3)}</b> <span class="sd">± ${fmt(m.f1_std, 3)}</span></td><td class="num">${fmt(m.roc_auc_mean, 3)}</td><td class="num">${pct(m.legit_flagged_rate_mean)}</td><td class="num">${pct(m.high_risk_missed_rate_mean)}</td></tr>`;
     }).join("");
   }
 
@@ -111,7 +111,7 @@
     const mk = (cl, v, t) => (v === null || v === undefined ? "" : `<span class="mk ${cl}" style="left:${Math.max(0, Math.min(100, v))}%" title="${t} ${fmt(v)}"><i></i></span>`);
     return `<div class="scale" aria-hidden="true"><div class="track"></div>${[0, 50, 80, 100].map((t) => `<span class="tick" style="left:${t}%">${t}</span>`).join("")}
       ${mk("rule", j.rule, "Rules")}${mk("model", j.model, "Model")}${mk("hyb", j.hybrid, "Trust")}</div>
-      <div class="legend"><span><i style="background:#7b8698"></i>Rules ${fmt(j.rule)}</span><span><i style="background:#9db8dd"></i>Model ${fmt(j.model)}</span><span><i style="background:var(--navy)"></i>Trust ${fmt(j.hybrid)}</span><span>Evidence coverage ${fmt(100 * j.coverage)}%</span></div>`;
+      <div class="legend"><span><i style="background:var(--mk-rule)"></i>Rules ${fmt(j.rule)}</span><span><i style="background:var(--mk-model)"></i>Model ${fmt(j.model)}</span><span><i style="background:var(--ink)"></i>Trust ${fmt(j.hybrid)}</span><span>Evidence coverage ${fmt(100 * j.coverage)}%</span></div>`;
   }
 
   function indicatorTable(list, { pts = true } = {}) {
@@ -148,7 +148,7 @@
       <div class="r-sec"><h3>The 21 indicators</h3>${indicatorTable(j.indicators)}<p class="note">An indicator that could not be checked earns half its points.</p></div>
       <div class="r-sec"><h3>What moved the model</h3>${fx}</div>
       <div class="r-sec"><h3>Checks for a person</h3><ol class="manual">${Object.entries(META.manual_checks).map(([k, t]) => `<li><b>${k}</b> ${esc(t)}</li>`).join("")}</ol></div>
-      <div class="r-sec"><p class="note">Label in the dataset: <b>${esc(CLASS_NAME[j.label])}</b>, from ${esc(j.label_source)}. ${j.split === "train" ? "The model score is out-of-fold." : "Scored by the final model, which never saw this journal."}</p></div>`;
+      <div class="r-sec"><p class="note">Label in the dataset: <b>${esc(CLASS_NAME[j.label])}</b>, from ${esc(String(j.label_source || "").replace(/Mini project/g, "Manual checklist"))}. ${j.split === "train" ? "The model score is out-of-fold." : "Scored by the final model, which never saw this journal."}</p></div>`;
     if (!dlg.open) dlg.showModal();
     dlg.scrollTop = 0;
   }
@@ -307,3 +307,5 @@
     $("#f-issn").value = b.dataset.issn; $("#f-url").value = b.dataset.url || ""; liveCheck(b.dataset.issn, b.dataset.url || "");
   }));
 })();
+/* hide the hero scroll prompt once the reader scrolls */
+addEventListener("scroll", () => document.body.classList.toggle("scrolled", scrollY > 80), { passive: true });
