@@ -580,13 +580,13 @@ dialog#report::backdrop{background:rgba(29,29,29,.6)}
 .motion .brand .dot-mark{animation:dot-flow 6s linear infinite}
 .motion .brand:hover .dot-mark{animation:dot-flow 1.6s linear infinite,dot-beat .8s ease-in-out infinite}
 .motion .foot-mark .dot-mark{animation:dot-flow 6s linear infinite;opacity:0}
-.motion .foot-mark.in .dot-mark{animation:dot-flow 6s linear infinite,dot-drop .9s cubic-bezier(.3,1.4,.5,1) .9s both}
+.motion .foot-mark.in .dot-mark{animation:dot-flow 6s linear infinite,dot-drop .9s cubic-bezier(.3,1.4,.5,1) .9s both,dot-hop 12s ease-in-out 4s infinite}
 @media (prefers-reduced-motion:reduce){.brand .dot-mark,.foot-mark .dot-mark{animation:none!important;opacity:1!important}}
-.sec-head .label::before,.intro-l .label::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px;background:var(--accent)}
-#dataset .sec-head .label::before{background:var(--rose)}
-#how .sec-head .label::before{background:var(--sun)}
-#results .sec-head .label::before{background:var(--rose)}
-#run .sec-head .label::before{background:var(--sky)}
+.sec-head .label::before,.intro-l .label::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px;background:var(--dot,var(--accent))}
+#dataset .sec-head .label{--dot:var(--rose)}
+#how .sec-head .label{--dot:var(--sun)}
+#results .sec-head .label{--dot:var(--rose)}
+#run .sec-head .label{--dot:var(--sky)}
 a:hover{color:var(--accent)}
 .ghost:hover{color:var(--accent)}
 .nav a:hover{color:var(--accent)}
@@ -597,3 +597,38 @@ a:hover{color:var(--accent)}
 .copy.done{background:var(--new);border-color:var(--new);color:#fff}
 .seg button[aria-pressed="true"]{background:var(--ink)}
 .examples button:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ─── more motion (all of it only under .motion, i.e. when the reader allows motion) ─── */
+/* footer dot: a small hop every 12 s after it has dropped in */
+@keyframes dot-hop{0%,86%,100%{transform:none}89%{transform:translateY(-.32em) scale(1.06,.94)}92%{transform:translateY(0) scale(1.1,.88)}94.5%{transform:translateY(-.1em)}97%{transform:none}}
+/* section-label dots: a soft ring pings out every few seconds, each section slightly out of step */
+@keyframes label-ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--dot,var(--accent)) 55%,transparent)}70%,100%{box-shadow:0 0 0 7px color-mix(in srgb,var(--dot,var(--accent)) 0%,transparent)}}
+@keyframes label-pop{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+.motion .sec-head .label.in::before,.motion .intro-l.in .label::before{animation:label-pop .6s cubic-bezier(.3,1.5,.5,1) .2s both,label-ping 3.6s ease-out 1s infinite}
+.motion #check .sec-head .label.in::before{animation-delay:.2s,1.4s}
+.motion #dataset .sec-head .label.in::before{animation-delay:.2s,1.8s}
+.motion #how .sec-head .label.in::before{animation-delay:.2s,2.2s}
+.motion #results .sec-head .label.in::before{animation-delay:.2s,2.6s}
+.motion #run .sec-head .label.in::before{animation-delay:.2s,3s}
+/* pipeline: a step's number pings once as it lights up */
+@keyframes step-ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}100%{box-shadow:0 0 0 14px color-mix(in srgb,var(--accent) 0%,transparent)}}
+.motion .pipe-row.lit .pipe-n{animation:step-ping .9s ease-out}
+/* hero: scroll arrow bobs; the example card's warning dots pulse in turn */
+@keyframes bob{0%,100%{transform:none}50%{transform:translateY(4px)}}
+.scroll span{display:inline-block}
+.motion .scroll span{animation:bob 1.8s ease-in-out infinite}
+@keyframes warn{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--high) 40%,transparent)}50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--high) 0%,transparent)}}
+.motion .hc-list li .dot.fail{animation:warn 2.4s ease-in-out infinite}
+.motion .hc-list li:nth-child(2) .dot.fail{animation-delay:.6s}.motion .hc-list li:nth-child(3) .dot.fail{animation-delay:1.2s}.motion .hc-list li:nth-child(4) .dot.fail{animation-delay:1.8s}
+/* nav: underline slides in from the left */
+.nav a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .3s,color .2s}
+.nav a:hover{text-decoration:none;background-size:100% 1px}
+/* hover micro-interactions on cells and numbers */
+.sources li,.stat,.soon-grid li{transition:background .3s}
+.sources li b,.stat .sv{transition:color .3s,transform .3s}
+.sources li:hover{background:#f8f7f4}.sources li:hover b{color:var(--accent);transform:translateY(-2px)}
+.stat:hover .sv{color:var(--accent)}
+.pipe-cells .pc{transition:background .3s}.pipe-cells .pc:hover{background:#fbfaf8}
+.cat{transition:background .3s}.cat:hover{background:#fbfaf8}
+.panel{transition:transform .3s}
+.fig.chart{transition:background-color .3s}
