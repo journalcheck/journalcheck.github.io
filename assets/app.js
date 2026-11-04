@@ -308,6 +308,11 @@
   }
 
   $("#checkform").addEventListener("submit", (e) => { e.preventDefault(); liveCheck($("#f-issn").value, $("#f-url").value); });
+  /* arriving from "Where to submit": run the live check for the chosen journal */
+  try {
+    const pre = sessionStorage.getItem("jc-prefill");
+    if (pre) { sessionStorage.removeItem("jc-prefill"); $("#f-issn").value = pre; liveCheck(pre, ""); }
+  } catch (_) {}
   document.querySelectorAll(".examples button").forEach((b) => b.addEventListener("click", () => {
     $("#f-issn").value = b.dataset.issn; $("#f-url").value = b.dataset.url || ""; liveCheck(b.dataset.issn, b.dataset.url || "");
   }));
