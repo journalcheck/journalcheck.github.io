@@ -572,7 +572,16 @@ dialog#report::backdrop{background:rgba(29,29,29,.6)}
 @media (max-width:640px){.itable th,.itable td{padding:8px 8px}.r-itable{overflow-x:auto}.itable .ev{min-width:0}}
 
 /* colour accents (sparing; from the sphere) */
-.brand .dot-mark,.foot-mark .dot-mark{background:linear-gradient(255deg,var(--sun),var(--rose) 45%,var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .dot-mark,.foot-mark .dot-mark{display:inline-block;background:linear-gradient(90deg,var(--sun),var(--rose),var(--sky),var(--rose),var(--sun));background-size:400% 100%;background-position:0 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+/* the dot: colours flow through the sphere's palette; the footer dot drops in with a small bounce */
+@keyframes dot-flow{to{background-position:400% 0}}
+@keyframes dot-drop{0%{transform:translateY(-.9em) scale(.3);opacity:0}60%{transform:translateY(.06em) scale(1.08);opacity:1}100%{transform:none;opacity:1}}
+@keyframes dot-beat{0%,100%{transform:none}50%{transform:scale(1.35)}}
+.motion .brand .dot-mark{animation:dot-flow 6s linear infinite}
+.motion .brand:hover .dot-mark{animation:dot-flow 1.6s linear infinite,dot-beat .8s ease-in-out infinite}
+.motion .foot-mark .dot-mark{animation:dot-flow 6s linear infinite;opacity:0}
+.motion .foot-mark.in .dot-mark{animation:dot-flow 6s linear infinite,dot-drop .9s cubic-bezier(.3,1.4,.5,1) .9s both}
+@media (prefers-reduced-motion:reduce){.brand .dot-mark,.foot-mark .dot-mark{animation:none!important;opacity:1!important}}
 .sec-head .label::before,.intro-l .label::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px;background:var(--accent)}
 #dataset .sec-head .label::before{background:var(--rose)}
 #how .sec-head .label::before{background:var(--sun)}
