@@ -69,7 +69,7 @@
   const single = [
     ".hero .label", ".lead", ".cta", ".hero-card", ".sec-head .label", ".sec-head > p", ".intro-l", ".intro-r",
     ".sources-label", ".checkform", ".examples", ".toolbar", ".tablewrap", ".tfoot", ".note", ".sub-head .label",
-    "#cats", ".more", ".panel", ".links", ".foot-row",
+    "#cats", ".more", ".panel", ".links",
   ];
   $$(single.join(",")).forEach((el) => el.classList.add("rv"));
   [".pipe-row", ".two .panel"].forEach((sel) => $$(sel).forEach((el, i) => { el.classList.add("rv"); el.style.setProperty("--i", sel === ".pipe-row" ? 0 : i); }));
@@ -97,6 +97,7 @@
 
   /* 4. count numbers up from zero */
   function countUp(el) {
+    if (el.dataset.counted) return; el.dataset.counted = "1";
     const m = el.textContent.trim().match(/^(\d+(?:\.\d+)?)(.*)$/);
     if (!m) return;
     const target = parseFloat(m[1]), dec = (m[1].split(".")[1] || "").length, rest = m[2];
@@ -130,8 +131,13 @@
     ticking = false;
     const y = scrollY, vh = innerHeight;
     bar.style.transform = `scaleX(${y / Math.max(1, root.scrollHeight - vh)})`;
-    // at the very bottom nothing can scroll further into view: show whatever is still waiting on screen
-    if (y + vh >= root.scrollHeight - 4) $$(".rv:not(.in), .lines:not(.in), .wipe:not(.in)").forEach((el) => { if (el.getBoundingClientRect().top < vh) el.classList.add("in"); });
+    // safety net: anything already well inside the viewport is shown even if the observer missed it
+    // (fast flicks, the very bottom of the page, browsers that throttle observers)
+    const atEnd = y + vh >= root.scrollHeight - 40;
+    $$(".rv:not(.in), .lines:not(.in), .wipe:not(.in)").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < (atEnd ? vh : vh * 0.85)) { el.classList.add("in"); if (el.matches(".stat .sv")) countUp(el); }
+    });
     if (sphere && y < vh * 1.4) {
       sphere.style.setProperty("--py", `${y * 0.28}px`);
       if (heroRings) heroRings.style.setProperty("--rs", (1 + y / vh * 0.35).toFixed(3));

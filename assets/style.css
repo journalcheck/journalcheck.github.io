@@ -198,7 +198,7 @@ td.c-issn{font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--
 .fig figcaption{font-size:var(--t-body-sm);color:var(--ink-2);margin-top:19px;display:flex;gap:15px;align-items:baseline;background:var(--paper);padding:8px 0 0}
 .fig figcaption .label{flex:none;color:var(--muted)}
 .fig.wide{padding:46px}
-.gallery{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-top:var(--gap)}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-top:var(--gap);align-items:start}
 
 /* ─── steps / indicator catalogue ─── */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:var(--gap)}
@@ -435,7 +435,7 @@ dialog#report::backdrop{background:rgba(29,29,29,.6)}
 
 /* ─── results charts (HTML, animated) ─── */
 .chart{--s-hij:#2a78d6;--s-leg:#eb6834;--s-pred:#1baf7a;display:flex;flex-direction:column}
-.chart figcaption{margin-top:auto;padding-top:19px}
+.chart figcaption{padding-top:19px}
 .legend-row{display:flex;gap:8px 19px;flex-wrap:wrap;font-size:var(--t-caption);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2);background:var(--paper);padding:4px 0 15px}
 .legend-row span{display:inline-flex;align-items:center;gap:8px}
 .sw{width:10px;height:10px;border-radius:2px;display:inline-block}
