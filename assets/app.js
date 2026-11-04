@@ -176,15 +176,20 @@
   }
   const sameSite = (a, b) => { a = regDomain(a); b = regDomain(b); return !!a && !!b && (a === b || GROUPS.some((g) => g.includes(a) && g.includes(b))); };
 
-  async function getJSON(url) {
-    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
-    try {
-      const r = await fetch(url, { signal: ctl.signal, headers: { Accept: "application/json" } });
-      if (r.status === 404 || r.status === 410) return { status: "not_found" };
-      if (!r.ok) return { status: "error", error: "HTTP " + r.status };
-      return { status: "found", data: await r.json() };
-    } catch (e) { return { status: "error", error: e.name === "AbortError" ? "timed out" : "not reachable from the browser" }; }
-    finally { clearTimeout(t); }
+  async function getJSON(url, tries = 3) {
+    // registries sometimes refuse a burst of requests (rate limits, edge hiccups): retry with a short back-off
+    for (let attempt = 1; ; attempt++) {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
+      let res;
+      try {
+        const r = await fetch(url, { signal: ctl.signal, headers: { Accept: "application/json" } });
+        if (r.status === 404 || r.status === 410) return { status: "not_found" };
+        res = r.ok ? { status: "found", data: await r.json() } : { status: "error", error: "HTTP " + r.status, retry: r.status === 429 || r.status >= 500 };
+      } catch (e) { res = { status: "error", error: e.name === "AbortError" ? "timed out" : "not reachable from the browser", retry: e.name !== "AbortError" }; }
+      finally { clearTimeout(t); }
+      if (res.status !== "error" || !res.retry || attempt >= tries) { delete res.retry; return res; }
+      await new Promise((r) => setTimeout(r, 1200 * attempt));
+    }
   }
 
   function ind(id, result, evidence) {
