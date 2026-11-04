@@ -14,9 +14,9 @@
   /* type */
   --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --t-caption:11px; --t-body-sm:15px; --t-body:18px; --t-sub:34px; --t-h-sm:46px; --t-h:70px; --t-display:103px;
+  --t-caption:12px; --t-body-sm:15px; --t-body:18px; --t-sub:34px; --t-h-sm:46px; --t-h:70px; --t-display:103px;
   /* layout */
-  --max:1400px; --pad:clamp(20px,3vw,46px); --gap:19px; --sec:clamp(76px,9vw,119px); --r:10px;
+  --max:1400px; --pad:clamp(20px,3vw,46px); --gap:19px; --sec:clamp(56px,6.4vw,96px); --r:10px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:24px}
@@ -78,9 +78,9 @@ b,strong{font-weight:700}
 body.scrolled .scroll{opacity:0;pointer-events:none}
 
 /* ─── numbers band (logo-grid style) ─── */
-.band{padding:0 0 var(--sec)}
+.band{padding:0}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.stat{background:var(--paper);padding:30px;display:flex;flex-direction:column;justify-content:space-between;min-height:220px}
+.stat{background:var(--paper);padding:30px;display:flex;flex-direction:column;justify-content:space-between;min-height:190px}
 .stat .sv{font-size:clamp(46px,5.2vw,var(--t-h));line-height:.8;letter-spacing:.013em}
 .stat .lbl{font-size:var(--t-body-sm);color:var(--ink-2);max-width:20em;margin-top:30px}
 
@@ -89,16 +89,16 @@ body.scrolled .scroll{opacity:0;pointer-events:none}
 .section.stone{background:var(--stone)}
 .section+.section:not(.stone){border-top:1px solid var(--line)}
 .section.stone+.section{border-top:0}
-.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap) 46px;align-items:end;margin-bottom:76px}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap) 46px;align-items:end;margin-bottom:56px}
 .sec-head .label{margin-bottom:30px}
 .sec-head h2{font-size:clamp(46px,6.4vw,var(--t-h));line-height:.8;letter-spacing:.013em;text-transform:uppercase}
 .sec-head>p{margin:0;max-width:36em;font-size:var(--t-body)}
-.sub-head{margin:var(--sec) 0 30px;display:flex;flex-direction:column;gap:19px}
+.sub-head{margin:76px 0 30px;display:flex;flex-direction:column;gap:19px}
 .sub{font-size:var(--t-sub);line-height:1;text-transform:uppercase}
 
 /* founder-intro style two-column block */
-.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap) 46px;padding-bottom:76px}
-.intro+.intro{padding-top:76px;border-top:1px solid var(--line);padding-bottom:0}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap) 46px;padding-bottom:56px}
+.intro+.intro{padding-top:56px;border-top:1px solid var(--line);padding-bottom:0}
 .intro-l{display:flex;flex-direction:column;gap:19px;align-items:flex-start}
 .intro-statement{font-size:var(--t-body-sm);text-transform:uppercase;letter-spacing:.05em;max-width:26em;margin:0;line-height:1.4}
 .intro-r p{margin:0 0 15px;max-width:36em}
@@ -133,7 +133,7 @@ body.scrolled .scroll{opacity:0;pointer-events:none}
 .examples .label{margin-right:4px;color:var(--muted)}
 .examples button{font:inherit;font-size:var(--t-body-sm);border:0;border-bottom:1px solid var(--ink);background:transparent;padding:2px 0;cursor:pointer;color:var(--ink);border-radius:0}
 .examples button:hover{border-bottom-style:dashed}
-.check-out{margin-top:46px}
+.check-out{margin-top:46px}.check-out:empty{margin-top:0}
 .cr{background:var(--paper)}
 .cr-head{padding:30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
 .cr-head>div:first-child{flex:1 1 360px;min-width:0}
@@ -562,3 +562,5 @@ dialog#report::backdrop{background:rgba(29,29,29,.6)}
 #fig-identity .hb-bar{height:18px}
 #fig-act .act-top{max-width:560px;margin-left:auto;margin-right:auto}
 @media (max-width:1100px){.gallery{grid-template-columns:1fr}.chart .hb{flex:none}}
+.hc-head .label{white-space:nowrap}
+@media (max-width:640px){.itable th,.itable td{padding:8px 8px}.r-itable{overflow-x:auto}.itable .ev{min-width:0}}
