@@ -72,9 +72,11 @@
     "#cats", ".more", ".panel", ".links", ".foot-row",
   ];
   $$(single.join(",")).forEach((el) => el.classList.add("rv"));
-  [".stats .stat", ".sources li", ".pipe-row", ".two .panel"].forEach((sel) => $$(sel).forEach((el, i, all) => {
-    el.classList.add("rv"); el.style.setProperty("--i", sel === ".pipe-row" ? 0 : i % (all.length > 5 ? 5 : all.length));
-  }));
+  [".pipe-row", ".two .panel"].forEach((sel) => $$(sel).forEach((el, i) => { el.classList.add("rv"); el.style.setProperty("--i", sel === ".pipe-row" ? 0 : i); }));
+  /* hairline grids: keep the white cells, fade their content (an empty cell would show the grey divider colour) */
+  [".stats .stat", ".sources li"].forEach((sel) => $$(sel).forEach((cell, i) => [...cell.children].forEach((el) => {
+    el.classList.add("rv"); el.style.setProperty("--i", i % 5);
+  })));
   $$(".gallery .fig").forEach((el, i) => { el.classList.add("wipe"); el.style.setProperty("--i", i % 2); });
 
   /* 3. reveal on enter */
@@ -128,6 +130,8 @@
     ticking = false;
     const y = scrollY, vh = innerHeight;
     bar.style.transform = `scaleX(${y / Math.max(1, root.scrollHeight - vh)})`;
+    // at the very bottom nothing can scroll further into view: show whatever is still waiting on screen
+    if (y + vh >= root.scrollHeight - 4) $$(".rv:not(.in), .lines:not(.in), .wipe:not(.in)").forEach((el) => { if (el.getBoundingClientRect().top < vh) el.classList.add("in"); });
     if (sphere && y < vh * 1.4) {
       sphere.style.setProperty("--py", `${y * 0.28}px`);
       if (heroRings) heroRings.style.setProperty("--rs", (1 + y / vh * 0.35).toFixed(3));
