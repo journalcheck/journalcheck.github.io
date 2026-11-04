@@ -198,7 +198,7 @@ td.c-issn{font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--
 .fig figcaption{font-size:var(--t-body-sm);color:var(--ink-2);margin-top:19px;display:flex;gap:15px;align-items:baseline;background:var(--paper);padding:8px 0 0}
 .fig figcaption .label{flex:none;color:var(--muted)}
 .fig.wide{padding:46px}
-.gallery{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-top:var(--gap);align-items:start}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-top:var(--gap);align-items:stretch}
 
 /* ─── steps / indicator catalogue ─── */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:var(--gap)}
@@ -552,3 +552,11 @@ dialog#report::backdrop{background:rgba(29,29,29,.6)}
   .act{grid-template-columns:1fr}
   .codebox .code{padding-right:19px;padding-top:50px}
 }
+
+/* equal-height figure boxes: the shorter chart spreads its rows to fill the box instead of leaving a gap */
+.chart .hb{flex:1;align-content:space-evenly}
+.chart .xt{flex:1;display:flex;flex-direction:column}
+.chart .xt-rows{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
+.chart .act{flex:1}
+.chart figcaption{margin-top:0}
+@media (max-width:900px){.chart .hb,.chart .xt,.chart .xt-rows,.chart .act{flex:none}}
