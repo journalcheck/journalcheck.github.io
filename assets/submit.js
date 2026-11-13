@@ -292,19 +292,30 @@
   }
 
   /* ------------------------------------------------------------ conferences */
-  const norm = (s) => String(s || "").toLowerCase().replace(/\b(19|20)\d{2}\b/g, " ").replace(/proceedings of( the)?|international|conference|symposium|workshop|annual|acm|ieee|on the|on|the|of|and|&/g, " ").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  const norm = (s) => String(s || "").toLowerCase().replace(/&/g, " ").replace(/[^a-z0-9 ]/g, " ").replace(/\b(19|20)\d{2}\b/g, " ").replace(/\b(proceedings|international|conference|symposium|workshop|annual|acm|ieee|on|the|of|and|in|for)\b/g, " ").replace(/\s+/g, " ").trim();
   function prepConf(c) {
     const ac = String(c.title || "").replace(/[^A-Za-z0-9]/g, "");
-    return { ...c, _ac: ac.length >= 3 ? new RegExp(`(^|[^A-Za-z])${ac}([^A-Za-z]|$)`) : null, _n: norm(c.name), _tok: new Set(norm(c.name).split(" ").filter((w) => w.length > 2)) };
+    // only acronym-like titles (NeurIPS, ICCV) are matched as acronyms; "Cloud" or "Performance" are ordinary words
+    return { ...c, _ac: ac.length >= 3 && (ac.match(/[A-Z]/g) || []).length >= 2 ? new RegExp(`(^|[^A-Za-z])${ac}([^A-Za-z]|$)`) : null, _n: norm(c.name), _tok: new Set(norm(c.name).split(" ").filter((w) => w.length > 2)) };
   }
   function matchConf(sourceName) {
     const n = norm(sourceName), tok = new Set(n.split(" ").filter((w) => w.length > 2));
     let best = null, bestS = 0;
     CONFS.forEach((c) => {
+      // exact name, else acronym, else most of the conference's name words present. Ties go to the more
+      // specific name (CVPR beats "Computer Vision Conference", NeurIPS beats ICONIP), and a long name match
+      // outweighs a sponsor acronym inside it ("ACM SIGIR Conference on Human Information..." is CHIIR, not SIGIR)
       let s = 0;
-      if (c._ac && c._ac.test(sourceName)) s = 1;
-      else if (c._n && c._n.length > 8 && n.includes(c._n)) s = 0.9;
-      else if (c._tok.size >= 2) { const inter = [...c._tok].filter((w) => tok.has(w)).length; s = inter / c._tok.size >= 0.8 ? 0.7 : 0; }
+      const raw = String(sourceName || "").toLowerCase().trim();
+      if (raw === String(c.name || "").toLowerCase().trim()) s = 1;
+      else if (c._n && n === c._n) s = 0.95;
+      if (c._ac && c._ac.test(sourceName)) s = Math.max(s, 0.85);
+      if (c._tok.size >= 2 || (c._tok.size === 1 && c._n.length > 8)) {
+        const inter = [...c._tok].filter((w) => tok.has(w)).length;
+        let t = inter / c._tok.size >= 0.8 ? 0.7 + Math.min(inter, 5) * 0.04 - Math.min(c._tok.size - inter, 5) / 500 : 0;
+        if (t && c._tok.size === 1) t -= 0.15; // a one-word name ("Eurographics") only wins when nothing longer fits
+        s = Math.max(s, t);
+      }
       if (s > bestS) { bestS = s; best = c; }
     });
     return best;
