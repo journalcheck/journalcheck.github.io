@@ -40,18 +40,50 @@
     const country = US_STATES.test(key) ? "United States" : ALIAS[key] || last.replace(/\b\w+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
     return { country, online };
   }
+  /* where = list of tokens: "r:Asia", "c:India", "online"; a conference passes if it matches any of them */
   function inPlace(conf, where) {
-    if (!where) return true;
-    if (where === "online") return conf.loc.online;
-    if (where.startsWith("r:")) return (REGIONS[where.slice(2)] || []).includes(conf.loc.country);
-    return conf.loc.country === where.slice(2);
+    if (!where || !where.length) return true;
+    return where.some((w) => w === "online" ? conf.loc.online
+      : w.startsWith("r:") ? (REGIONS[w.slice(2)] || []).includes(conf.loc.country)
+      : conf.loc.country === w.slice(2));
   }
+  const WHERE = new Set();
   function fillPlaces() {
-    const sel = $("#ws-where"); if (!sel) return;
+    const box = $("#ws-where"); if (!box) return;
     const n = {}; CONFS.forEach((c) => { if (c.loc.country) n[c.loc.country] = (n[c.loc.country] || 0) + 1; });
     const regions = Object.keys(REGIONS).map((r) => [r, CONFS.filter((c) => REGIONS[r].includes(c.loc.country)).length]).filter(([, k]) => k);
-    sel.innerHTML = `<option value="">Anywhere</option><optgroup label="Region">${regions.map(([r, k]) => `<option value="r:${esc(r)}">${esc(r)} (${k})</option>`).join("")}<option value="online">Online or hybrid (${CONFS.filter((c) => c.loc.online).length})</option></optgroup>`
-      + `<optgroup label="Country">${Object.keys(n).sort().map((c) => `<option value="c:${esc(c)}">${esc(c)} (${n[c]})</option>`).join("")}</optgroup>`;
+    regions.push(["Online or hybrid", CONFS.filter((c) => c.loc.online).length]);
+    const tok = (r) => (r === "Online or hybrid" ? "online" : `r:${r}`);
+    box.querySelector(".ws-ms-regions").innerHTML = regions.map(([r, k]) =>
+      `<button type="button" class="ws-ms-chip" data-tok="${esc(tok(r))}" aria-pressed="false">${esc(r)} <span>${k}</span></button>`).join("");
+    box.querySelector(".ws-ms-list").innerHTML = Object.keys(n).sort().map((c) =>
+      `<label class="ws-ms-opt" data-name="${esc(c.toLowerCase())}"><input type="checkbox" value="c:${esc(c)}"><span>${esc(c)}</span><em>${n[c]}</em></label>`).join("");
+    const btn = box.querySelector(".ws-ms-btn"), pop = box.querySelector(".ws-ms-pop"), val = box.querySelector(".ws-ms-val");
+    const label = (t) => (t === "online" ? "Online or hybrid" : t.slice(2));
+    const sync = () => {
+      box.querySelectorAll(".ws-ms-chip").forEach((b) => b.setAttribute("aria-pressed", WHERE.has(b.dataset.tok)));
+      box.querySelectorAll(".ws-ms-opt input").forEach((i) => (i.checked = WHERE.has(i.value)));
+      const all = [...WHERE].map(label);
+      val.textContent = !all.length ? "Anywhere" : all.length <= 2 ? all.join(", ") : `${all.slice(0, 2).join(", ")} +${all.length - 2}`;
+      btn.classList.toggle("on", all.length > 0);
+      box.querySelector(".ws-ms-count").textContent = all.length ? `${CONFS.filter((c) => inPlace(c, [...WHERE])).length} conferences in your selection` : `${CONFS.length} conferences tracked`;
+    };
+    const open = (yes) => { pop.hidden = !yes; btn.setAttribute("aria-expanded", yes); if (yes) box.querySelector(".ws-ms-q").focus(); };
+    btn.addEventListener("click", () => open(pop.hidden));
+    box.addEventListener("click", (e) => {
+      const chip = e.target.closest(".ws-ms-chip");
+      if (chip) { WHERE.has(chip.dataset.tok) ? WHERE.delete(chip.dataset.tok) : WHERE.add(chip.dataset.tok); sync(); }
+      if (e.target.closest("[data-clear]")) { WHERE.clear(); sync(); }
+      if (e.target.closest("[data-done]")) { open(false); btn.focus(); }
+    });
+    box.addEventListener("change", (e) => { const i = e.target.closest(".ws-ms-opt input"); if (i) { i.checked ? WHERE.add(i.value) : WHERE.delete(i.value); sync(); } });
+    box.querySelector(".ws-ms-q").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      box.querySelectorAll(".ws-ms-opt").forEach((o) => (o.hidden = q && !o.dataset.name.includes(q)));
+    });
+    document.addEventListener("click", (e) => { if (!pop.hidden && !box.contains(e.target)) open(false); });
+    box.addEventListener("keydown", (e) => { if (e.key === "Escape" && !pop.hidden) { open(false); btn.focus(); } });
+    sync();
   }
   const ready = Promise.all([
     Promise.all([
@@ -293,11 +325,11 @@
       const rankBoost = ({ "A*": 0.12, A: 0.08, B: 0.04 })[e.conf.core] || ({ A: 0.08, B: 0.04 })[e.conf.ccf] || 0;
       const fit = 0.6 * (e.sem / maxSem) + 0.4 * (Math.log1p(e.cnt) / Math.log1p(maxCount));
       return { kind: "conference", e, fit, score: fit + rankBoost };
-    }).filter((x) => x.e.n > 0 || x.e.cnt >= (opt.where ? 3 : 25))
+    }).filter((x) => x.e.n > 0 || x.e.cnt >= (opt.where.length ? 3 : 25))
       .filter((x) => inPlace(x.e.conf, opt.where))
       .filter((x) => !opt.months || (x.e.conf.next && Date.parse(x.e.conf.next.deadline) <= horizon))
       .sort((a, b) => b.score - a.score).slice(0, 10);
-    if (ranked.length || !opt.where) return ranked;
+    if (ranked.length || !opt.where.length) return ranked;
     // nothing in the chosen place matched the paper: list what is tracked there, clearly marked as unmatched
     return CONFS.filter((c) => inPlace(c, opt.where))
       .filter((c) => !opt.months || (c.next && Date.parse(c.next.deadline) <= horizon))
@@ -308,6 +340,7 @@
   /* ------------------------------------------------------------ rendering */
   const pct = (v) => Math.round(100 * v);
   const until = (iso) => { const d = Math.ceil((Date.parse(iso) - Date.now()) / 864e5); return d <= 0 ? "passed" : d === 1 ? "1 day left" : `${d} days left`; };
+  const urgency = (iso) => { const d = (Date.parse(iso) - Date.now()) / 864e5; return d <= 30 ? "soon" : d <= 90 ? "mid" : "far"; };
   const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   const chip = (lv, t) => `<span class="chip v-${lv}">${esc(t)}</span>`;
 
@@ -338,7 +371,7 @@
   function confCard(x, i) {
     const c = x.e.conf, nx = c.next;
     const ranks = [c.core && `CORE ${c.core}`, c.ccf && `CCF ${c.ccf}`].filter(Boolean).join(" · ");
-    const dl = nx ? `${c.estimated ? "Expected around " : ""}${fmtDate(nx.deadline)}${c.estimated ? "" : ` · <b>${until(nx.deadline)}</b>`}` : "Not announced";
+    const dl = nx ? `${c.estimated ? "Expected around " : ""}${fmtDate(nx.deadline)}${c.estimated ? "" : ` · <b class="ws-left ${urgency(nx.deadline)}">${until(nx.deadline)}</b>`}` : "Not announced";
     return `<li class="ws-card" style="--i:${i}">
       <div class="ws-rank">${String(i + 1).padStart(2, "0")}</div>
       <div class="ws-main">
@@ -388,7 +421,7 @@
     const input = { title: $("#ws-title").value.trim(), abstract: $("#ws-abstract").value.trim(), keywords: $("#ws-keywords").value.trim() };
     if ((input.title + input.abstract + input.keywords).length < 20) { say(`<span class="err">Add at least a title or a few keywords.</span>`); return; }
     const kind = $("input[name=ws-kind]:checked").value;
-    const opt = { oaOnly: $("#ws-oa").checked, maxFee: $("#ws-fee").value === "" ? null : Number($("#ws-fee").value), months: Number($("#ws-months").value) || 0, where: ($("#ws-where") || {}).value || "" };
+    const opt = { oaOnly: $("#ws-oa").checked, maxFee: $("#ws-fee").value === "" ? null : Number($("#ws-fee").value), months: Number($("#ws-months").value) || 0, where: [...WHERE] };
     const ts = terms(input);
     const go = $("#ws-go"); go.disabled = true;
     say(`<span class="spin"></span> Finding the papers closest to yours in OpenAlex…`);
@@ -399,11 +432,11 @@
       const [cj, cc] = await Promise.all([kind !== "conference" ? grouped(ts, "journal") : {}, kind !== "journal" ? grouped(ts, "conference") : {}]);
       const js = kind !== "conference" ? await rankJournals(sem, cj, opt) : [];
       const cs = kind !== "journal" ? rankConferences(sem, cc, opt) : [];
-      const col = (title, items, card, empty) => `<section class="ws-col"><div class="ws-col-head"><p class="label">${title}</p><span class="label">${items.length} of 10</span></div>${items.length ? `<ol class="ws-list">${items.map(card).join("")}</ol>` : `<p class="note">${empty}</p>`}</section>`;
-      out.innerHTML = `<div class="ws-terms"><span class="label">Matched by meaning to your title and abstract, and by keywords</span>${focus(ts).map((t) => `<span class="ws-term">${esc(t)}</span>`).join("")}</div>
+      const col = (title, items, card, empty, cls) => `<section class="ws-col ${cls}"><div class="ws-col-head"><p class="label">${title}</p><span class="label">${items.length} of 10</span></div>${items.length ? `<ol class="ws-list">${items.map(card).join("")}</ol>` : `<p class="note">${empty}</p>`}</section>`;
+      out.innerHTML = `<div class="ws-terms"><span class="label">Matched by meaning to your title and abstract, and by keywords</span>${focus(ts).map((t, i) => `<span class="ws-term" style="--i:${i}">${esc(t)}</span>`).join("")}</div>
         <div class="ws-cols ${kind === "both" ? "two" : ""}">
-          ${kind !== "conference" ? col("Journals", js, journalCard, "No journal matched. Try broader keywords or remove a filter.") : ""}
-          ${kind !== "journal" ? col("Conferences (computer science)", cs, confCard, "No tracked conference matched. Conference deadlines cover computer science only for now.") : ""}
+          ${kind !== "conference" ? col("Journals", js, journalCard, "No journal matched. Try broader keywords or remove a filter.", "is-j") : ""}
+          ${kind !== "journal" ? col("Conferences (computer science)", cs, confCard, "No tracked conference matched. Conference deadlines cover computer science only for now.", "is-c") : ""}
         </div>`;
       say(`Done. Ranked by meaning-level similarity, matching papers since ${SINCE()} and scope; high-risk journals were removed.`);
       out.scrollIntoView({ behavior: "smooth", block: "start" });

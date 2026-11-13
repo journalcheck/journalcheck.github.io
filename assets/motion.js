@@ -70,11 +70,12 @@
     ".hero .label", ".lead", ".cta", ".hero-card", ".sec-head .label", ".sec-head > p", ".intro-l", ".intro-r",
     ".sources-label", ".checkform", ".examples", ".toolbar", ".tablewrap", ".tfoot", ".note", ".sub-head .label",
     "#cats", ".more", ".panel", ".links",
+    ".ws-hero .label", ".ws-intro > *", ".ws-form",
   ];
   $$(single.join(",")).forEach((el) => el.classList.add("rv"));
   [".pipe-row", ".two .panel"].forEach((sel) => $$(sel).forEach((el, i) => { el.classList.add("rv"); el.style.setProperty("--i", sel === ".pipe-row" ? 0 : i); }));
   /* hairline grids: keep the white cells, fade their content (an empty cell would show the grey divider colour) */
-  [".stats .stat", ".sources li"].forEach((sel) => $$(sel).forEach((cell, i) => [...cell.children].forEach((el) => {
+  [".stats .stat", ".sources li", ".ws-steps li"].forEach((sel) => $$(sel).forEach((cell, i) => [...cell.children].forEach((el) => {
     el.classList.add("rv"); el.style.setProperty("--i", i % 5);
   })));
   $$(".gallery .fig").forEach((el, i) => { el.classList.add("wipe"); el.style.setProperty("--i", i % 2); });

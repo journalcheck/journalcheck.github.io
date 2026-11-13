@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261109a">
-<link rel="stylesheet" href="assets/submit.css?v=20261109a">
+<link rel="stylesheet" href="assets/style.css?v=20261113a">
+<link rel="stylesheet" href="assets/submit.css?v=20261113a">
 <script>
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
     document.documentElement.classList.add("motion");
@@ -37,6 +37,10 @@
 
 <main id="main">
 <section class="ws-hero">
+  <div class="sphere-wrap" aria-hidden="true">
+    <svg class="rings" viewBox="0 0 1000 1000"><circle cx="500" cy="500" r="330"/><circle cx="500" cy="500" r="410"/><circle cx="500" cy="500" r="495"/></svg>
+    <div class="sphere"></div>
+  </div>
   <div class="wrap">
     <p class="label">Beta — Where to submit</p>
     <h1 class="display">Where should<br>this paper go?</h1>
@@ -61,15 +65,28 @@
         <label class="fld"><span>Keywords <em>(optional, separated by commas)</em></span><input id="ws-keywords" placeholder="e.g. predatory journals, scholarly publishing, machine learning"></label>
       </div>
       <div class="ws-opts">
-        <fieldset class="ws-kind"><legend class="label">Looking for</legend>
-          <label><input type="radio" name="ws-kind" value="both" checked><span>Both</span></label>
-          <label><input type="radio" name="ws-kind" value="journal"><span>Journals</span></label>
-          <label><input type="radio" name="ws-kind" value="conference"><span>Conferences</span></label>
-        </fieldset>
+        <div class="fld ws-kind" role="radiogroup" aria-labelledby="ws-kind-l"><span id="ws-kind-l">Looking for</span>
+          <div class="ws-kind-opts">
+            <label><input type="radio" name="ws-kind" value="both" checked><span>Both</span></label>
+            <label><input type="radio" name="ws-kind" value="journal"><span>Journals</span></label>
+            <label><input type="radio" name="ws-kind" value="conference"><span>Conferences</span></label>
+          </div>
+        </div>
         <label class="ws-check"><input type="checkbox" id="ws-oa"><span>Open-access journals only</span></label>
         <label class="fld ws-small"><span>Max fee (US$)</span><input id="ws-fee" type="number" min="0" step="50" placeholder="Any"></label>
         <label class="fld ws-small"><span>Deadline within</span><select id="ws-months"><option value="0">Any time</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select></label>
-        <label class="fld ws-small ws-where"><span>Conference location</span><select id="ws-where"><option value="">Anywhere</option></select></label>
+        <div class="fld ws-where" id="ws-where">
+          <span id="ws-where-l">Conference location</span>
+          <button type="button" class="ws-ms-btn" aria-haspopup="true" aria-expanded="false" aria-labelledby="ws-where-l"><span class="ws-ms-val">Anywhere</span><i aria-hidden="true">▾</i></button>
+          <div class="ws-ms-pop" hidden role="group" aria-label="Choose regions and countries">
+            <p class="label">Regions</p>
+            <div class="ws-ms-regions"></div>
+            <p class="label">Countries</p>
+            <input class="ws-ms-q" type="search" placeholder="Filter countries" aria-label="Filter countries">
+            <div class="ws-ms-list"></div>
+            <div class="ws-ms-foot"><span class="ws-ms-count small"></span><button type="button" class="ghost sm" data-clear>Clear</button><button type="button" class="pill solid" data-done>Done</button></div>
+          </div>
+        </div>
         <button class="pill solid" id="ws-go" type="submit">Find venues <span aria-hidden="true">→</span></button>
       </div>
       <details class="more ws-adv"><summary>Options <span aria-hidden="true">→</span></summary>
@@ -83,21 +100,28 @@
 <section class="section stone" id="ws-how">
   <div class="wrap">
     <div class="sec-head">
-      <div><p class="label">How it ranks</p><h2>Fit first,<br>then safety</h2></div>
-      <p>Fit combines three signals from OpenAlex: how close in meaning a venue's recent papers are to your title and abstract (semantic search over the 50 closest papers), how many papers matching your most specific keywords it published in the last five years, and how much its published topics overlap your paper's subject areas. Journals that barely overlap are dropped, and a small share of the score comes from the h-index. Every journal then goes through JournalCheck's registry rules: listed high-risk journals are removed and sudden output jumps are flagged. Conference deadlines, ranks and acceptance rates come from the community-maintained <a href="https://github.com/ccfddl/ccf-deadlines" rel="noopener">ccfddl</a> list, so they cover computer science only. A fit score is a starting point: read the venue's scope and recent issues before you submit.</p>
+      <div><p class="label">How it ranks</p><h2>Fit first<br>then safety</h2></div>
+      <p>Three signals from OpenAlex decide how well a venue fits your paper; JournalCheck's own rules decide which venues are safe to show. A fit score is a starting point: read the venue's scope and recent issues before you submit.</p>
     </div>
+    <ol class="ws-steps">
+      <li class="s1"><span class="n">01</span><h3>Meaning</h3><p>OpenAlex finds the 50 published papers closest in meaning to your title and abstract. Venues that published them score highest.</p></li>
+      <li class="s2"><span class="n">02</span><h3>Keywords</h3><p>The share of a venue's recent output that matches your most specific keywords, so a specialist journal beats a mega-journal.</p></li>
+      <li class="s3"><span class="n">03</span><h3>Scope</h3><p>How far the venue's published topics overlap your paper's subject areas. Journals that barely overlap are dropped.</p></li>
+      <li class="s4"><span class="n">04</span><h3>Safety</h3><p>Every journal goes through JournalCheck's registry rules. High-risk journals are removed; output jumps and a thin track record are flagged.</p></li>
+    </ol>
+    <p class="note ws-sources">Conference deadlines, ranks and acceptance rates come from the community-maintained <a href="https://github.com/ccfddl/ccf-deadlines" rel="noopener">ccfddl</a> list and a hand-checked list of conferences held in India. Both cover computer science only.</p>
   </div>
 </section>
 </main>
 
 <footer class="foot">
   <div class="wrap">
-    <p class="foot-mark" aria-hidden="true">JournalCheck.</p>
+    <p class="foot-mark" aria-hidden="true">JournalCheck<span class="dot-mark">.</span></p>
     <div class="foot-row"><span class="label">Open source · MIT &amp; CC BY 4.0 · 2026</span><a class="ghost sm" href="https://github.com/journalcheck/journalcheck">github.com/journalcheck/journalcheck <span aria-hidden="true">↗</span></a><a class="ghost sm" href="#main">Back to top <span aria-hidden="true">↑</span></a></div>
   </div>
 </footer>
 
-<script src="assets/submit.js?v=20261109a" defer></script>
-<script src="assets/motion.js?v=20261109a" defer></script>
+<script src="assets/submit.js?v=20261113a" defer></script>
+<script src="assets/motion.js?v=20261113a" defer></script>
 </body>
 </html>
