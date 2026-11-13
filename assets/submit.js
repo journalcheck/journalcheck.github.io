@@ -54,7 +54,14 @@
       + `<optgroup label="Country">${Object.keys(n).sort().map((c) => `<option value="c:${esc(c)}">${esc(c)} (${n[c]})</option>`).join("")}</optgroup>`;
   }
   const ready = Promise.all([
-    fetch("data/conferences.json").then((r) => r.json()).then((d) => { CONFS = d.conferences.map(prepConf); CONFS.forEach((c) => (c.loc = locate(c.place))); fillPlaces(); }).catch(() => {}),
+    Promise.all([
+      fetch("data/conferences.json").then((r) => r.json()).catch(() => ({ conferences: [] })),
+      fetch("data/conferences_extra.json").then((r) => r.json()).catch(() => ({ conferences: [] })),   // hand-checked regional supplement
+    ]).then(([main, extra]) => {
+      const seen = new Set(main.conferences.map((c) => String(c.title).toLowerCase()));
+      CONFS = [...main.conferences, ...extra.conferences.filter((c) => !seen.has(String(c.title).toLowerCase()))].map(prepConf);
+      CONFS.forEach((c) => (c.loc = locate(c.place))); fillPlaces();
+    }),
     fetch("data/journals.json").then((r) => r.json()).then((d) => {
       d.journals.forEach((j) => [j.issn, j.issn_resolved].filter(Boolean).forEach((i) => (JC[i] = j)));
     }).catch(() => {}),
@@ -282,14 +289,20 @@
     const list = Object.values(by);
     const maxSem = Math.max(0.001, ...list.map((e) => e.sem)), maxCount = Math.max(1, ...list.map((e) => e.cnt));
     const horizon = opt.months ? Date.now() + opt.months * 30.4 * 864e5 : Infinity;
-    return list.map((e) => {
+    const ranked = list.map((e) => {
       const rankBoost = ({ "A*": 0.12, A: 0.08, B: 0.04 })[e.conf.core] || ({ A: 0.08, B: 0.04 })[e.conf.ccf] || 0;
       const fit = 0.6 * (e.sem / maxSem) + 0.4 * (Math.log1p(e.cnt) / Math.log1p(maxCount));
       return { kind: "conference", e, fit, score: fit + rankBoost };
-    }).filter((x) => x.e.n > 0 || x.e.cnt >= 25)
+    }).filter((x) => x.e.n > 0 || x.e.cnt >= (opt.where ? 3 : 25))
       .filter((x) => inPlace(x.e.conf, opt.where))
       .filter((x) => !opt.months || (x.e.conf.next && Date.parse(x.e.conf.next.deadline) <= horizon))
       .sort((a, b) => b.score - a.score).slice(0, 10);
+    if (ranked.length || !opt.where) return ranked;
+    // nothing in the chosen place matched the paper: list what is tracked there, clearly marked as unmatched
+    return CONFS.filter((c) => inPlace(c, opt.where))
+      .filter((c) => !opt.months || (c.next && Date.parse(c.next.deadline) <= horizon))
+      .sort((a, b) => (a.next ? Date.parse(a.next.deadline) : Infinity) - (b.next ? Date.parse(b.next.deadline) : Infinity))
+      .slice(0, 10).map((c) => ({ kind: "conference", unmatched: true, fit: 0, score: 0, e: { conf: c, n: 0, cnt: 0, titles: [] } }));
   }
 
   /* ------------------------------------------------------------ rendering */
@@ -331,14 +344,14 @@
       <div class="ws-main">
         <div class="ws-top"><span class="label">Conference · ${esc(c.area)}</span>${ranks ? `<span class="chip v-low">${esc(ranks)}</span>` : ""}</div>
         <h3>${esc(c.title)} <span class="ws-sub">${esc(c.name)}</span></h3>
-        <div class="ws-fit"><span class="ws-bar"><i style="--w:${pct(x.fit)}%"></i></span><span>${pct(x.fit)}% fit</span></div>
+        ${x.unmatched ? `<p class="ws-flags">Not matched to your paper. Listed because it is held in the place you chose; check its topics first.</p>` : `<div class="ws-fit"><span class="ws-bar"><i style="--w:${pct(x.fit)}%"></i></span><span>${pct(x.fit)}% fit</span></div>`}
         <p class="ws-ev">${[x.e.n ? `${x.e.n} of the ${CLOSEST} closest papers` : "", x.e.cnt ? `${x.e.cnt.toLocaleString()} matching papers since ${SINCE()}` : ""].filter(Boolean).join(" · ")}</p>
         ${x.e.titles.length ? `<p class="ws-why">Closest: <i>${x.e.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
           <div><dt>Submission deadline</dt><dd>${dl}${nx && nx.comment && !c.estimated ? `<span class="ws-note">${esc(nx.comment)}</span>` : ""}</dd></div>
           ${nx && nx.abstract && !c.estimated ? `<div><dt>Abstract due</dt><dd>${fmtDate(nx.abstract)}</dd></div>` : ""}
-          <div><dt>${c.estimated ? `Last edition (${esc(c.year)})` : "Conference dates"}</dt><dd>${esc(c.date || "Not announced")}</dd></div>
-          <div><dt>${c.estimated ? "Last venue" : "Venue"}</dt><dd>${esc(c.place || "Not announced")}</dd></div>
+          <div><dt>${c.estimated ? `Edition on record (${esc(c.year)})` : "Conference dates"}</dt><dd>${esc(c.date || "Not announced")}</dd></div>
+          <div><dt>${c.estimated ? "Its venue" : "Venue"}</dt><dd>${esc(c.place || "Not announced")}</dd></div>
           <div><dt>Acceptance</dt><dd>${c.accept ? `${Math.round(100 * c.accept.rate)}% (${c.accept.year})` : "–"}</dd></div>
           <div><dt>Fee</dt><dd>See registration page</dd></div>
         </dl>

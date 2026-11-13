@@ -1,0 +1,11 @@
+{
+  "note": "Hand-checked supplement to the ccfddl list: long-running computer-science conferences held in India. Each entry was checked against the conference's own site or call for papers on the date shown. Deadlines marked estimated are last cycle's deadline moved one year on.",
+  "checked": "2026-11-13",
+  "conferences": [
+    {"id": "comsnets", "title": "COMSNETS", "name": "International Conference on Communication Systems and Networks", "sub": "NW", "area": "Computer Networks", "ccf": null, "core": null, "year": 2027, "link": "https://www.comsnets.org/", "date": "January 5-9, 2027", "place": "Bengaluru, India", "next": {"deadline": "2027-08-31T11:59:59Z", "abstract": null, "comment": null}, "estimated": true, "accept": null},
+    {"id": "icdcn", "title": "ICDCN", "name": "International Conference on Distributed Computing and Networking", "sub": "NW", "area": "Distributed Computing and Networks", "ccf": null, "core": null, "year": 2027, "link": "http://icdcn.org/", "date": "January 4-7, 2027", "place": "Mangalore, India", "next": {"deadline": "2027-07-30T11:59:59Z", "abstract": null, "comment": null}, "estimated": true, "accept": null},
+    {"id": "fsttcs", "title": "FSTTCS", "name": "Foundations of Software Technology and Theoretical Computer Science", "sub": "CT", "area": "Theoretical Computer Science", "ccf": null, "core": null, "year": 2026, "link": "https://www.fsttcs.org.in/", "date": "December 2026", "place": "New Delhi, India", "next": {"deadline": "2027-07-11T11:59:59Z", "abstract": null, "comment": null}, "estimated": true, "accept": null},
+    {"id": "hipc", "title": "HiPC", "name": "IEEE International Conference on High Performance Computing", "sub": "DS", "area": "High-Performance Computing", "ccf": null, "core": null, "year": 2026, "link": "https://hipc.org/", "date": "December 16-19, 2026", "place": "Bengaluru, India", "next": {"deadline": "2027-06-17T11:59:59Z", "abstract": null, "comment": null}, "estimated": true, "accept": null},
+    {"id": "icvgip", "title": "ICVGIP", "name": "Indian Conference on Computer Vision, Graphics and Image Processing", "sub": "AI", "area": "Computer Vision", "ccf": null, "core": null, "year": 2026, "link": "https://icvgip.in/", "date": "December 21-24, 2026", "place": "Kolkata, India", "next": null, "estimated": false, "accept": null}
+  ]
+}
