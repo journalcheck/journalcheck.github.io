@@ -106,17 +106,11 @@
   /* the 50 papers closest in meaning to the title + abstract (OpenAlex semantic search, one call) */
   async function semantic(input) {
     const text = [input.title, input.abstract, input.keywords].filter(Boolean).join(". ").slice(0, 2000);
-    const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1}`, per_page: 50,
+    const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1},is_retracted:false,type:article|review`, per_page: 50,
       select: "id,title,publication_year,relevance_score,primary_location,primary_topic" };
-    const first = (await oa("/works", q)).results || [];
-    // a second page widens the pool to the 100 closest papers; semantic search allows one request a second
-    let second = [];
-    if (first.length === 50) {
-      await new Promise((r) => setTimeout(r, 1100));
-      try { second = (await oa("/works", { ...q, page: 2 })).results || []; } catch (_) { /* the first page is enough to rank */ }
-    }
-    CLOSEST = first.length + second.length;
-    return [...first, ...second];
+    const res = (await oa("/works", q)).results || [];
+    CLOSEST = res.length || 50;
+    return res;
   }
   /* how many matching papers each venue published (keyword search on the most specific phrases, grouped) */
   function focus(ts) {
@@ -126,7 +120,7 @@
   async function grouped(ts, sourceType) {
     const data = await oa("/works", {
       search: focus(ts).map(quote).join(" OR "),
-      filter: `from_publication_date:${SINCE()}-01-01,primary_location.source.type:${sourceType}`,
+      filter: `from_publication_date:${SINCE()}-01-01,primary_location.source.type:${sourceType},is_retracted:false,type:article|review`,
       group_by: "primary_location.source.id",
     });
     const m = {};
@@ -211,7 +205,7 @@
     }).filter((j) => j.screen.level !== "high")
       // a venue whose published topics barely overlap the paper's subject areas is out of scope
       .filter((j) => j.scope == null || j.scope >= 0.15)
-      .filter((j) => j.v.n > 0 || j.share >= 0.005)
+      .filter((j) => j.v.n > 0 ? true : (j.share >= 0.005 && j.scope != null && j.scope >= 0.3))
       .filter((j) => !opt.oaOnly || j.s.is_oa)
       .filter((j) => opt.maxFee == null || j.fee.usd == null || j.fee.usd <= opt.maxFee)
       .sort((a, b) => b.score - a.score).slice(0, 10);
@@ -251,7 +245,8 @@
       const rankBoost = ({ "A*": 0.12, A: 0.08, B: 0.04 })[e.conf.core] || ({ A: 0.08, B: 0.04 })[e.conf.ccf] || 0;
       const fit = 0.6 * (e.sem / maxSem) + 0.4 * (Math.log1p(e.cnt) / Math.log1p(maxCount));
       return { kind: "conference", e, fit, score: fit + rankBoost };
-    }).filter((x) => !opt.months || (x.e.conf.next && Date.parse(x.e.conf.next.deadline) <= horizon))
+    }).filter((x) => x.e.n > 0 || x.e.cnt >= 25)
+      .filter((x) => !opt.months || (x.e.conf.next && Date.parse(x.e.conf.next.deadline) <= horizon))
       .sort((a, b) => b.score - a.score).slice(0, 10);
   }
 
