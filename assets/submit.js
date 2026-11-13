@@ -13,8 +13,48 @@
 
   /* ------------------------------------------------------------ static data */
   let CONFS = [], JC = {};
+
+  /* ------------------------------------------------------------ where a conference is held */
+  const US_STATES = /^(ca|california|utah|colorado|texas|hawaii|washington|new york|florida|arizona)$/;
+  const ALIAS = { usa: "United States", "united states": "United States", "united state": "United States", us: "United States",
+    uk: "United Kingdom", "united kingdom": "United Kingdom", england: "United Kingdom", scotland: "United Kingdom", wales: "United Kingdom",
+    "republic of korea": "South Korea", "south korea": "South Korea", korea: "South Korea", "the netherlands": "Netherlands",
+    "türkiye": "Turkey", turkey: "Turkey", czechia: "Czech Republic", "mexico city": "Mexico", uae: "United Arab Emirates", "hong kong": "China", macau: "China", "macau sar": "China" };
+  const REGIONS = {
+    India: ["India"],
+    Asia: ["India", "China", "Japan", "Singapore", "South Korea", "Taiwan", "Vietnam", "Malaysia", "Thailand", "Indonesia", "Cambodia", "Philippines", "Sri Lanka", "Bangladesh", "Nepal", "Pakistan"],
+    "Middle East": ["Turkey", "United Arab Emirates", "Saudi Arabia", "Qatar", "Israel", "Egypt", "Jordan", "Oman", "Bahrain", "Kuwait", "Cyprus", "Iran"],
+    Europe: ["Italy", "United Kingdom", "Germany", "Greece", "Spain", "Netherlands", "France", "Portugal", "Poland", "Belgium", "Ireland", "Sweden", "Denmark", "Czech Republic", "Austria", "Cyprus", "Switzerland", "Hungary", "Luxembourg", "Lithuania", "Romania", "Estonia", "Finland", "Slovakia", "Iceland", "Norway"],
+    "North America": ["United States", "Canada", "Mexico"],
+    "Latin America": ["Brazil", "Mexico", "Argentina", "Chile", "Panama", "Barbados", "Colombia", "Peru"],
+    Africa: ["Morocco", "South Africa", "Egypt", "Kenya", "Nigeria", "Tunisia"],
+    Oceania: ["Australia", "New Zealand"],
+  };
+  /* "Kyoto, Japan" → Japan; "Budapest, Hungary (Hybrid)" → Hungary + online; "Virtual" → online only */
+  function locate(place) {
+    const raw = String(place || "");
+    const online = /online|virtual|hybrid/i.test(raw);
+    let last = raw.split(/[,，]/).pop().replace(/\(.*?\)/g, "").replace(/\s*(\/|&|and)\s*(online|virtual).*$/i, "").trim();
+    if (/^(tbd|online|virtual|virtual event|)$/i.test(last)) return { country: null, online };
+    const key = last.toLowerCase();
+    const country = US_STATES.test(key) ? "United States" : ALIAS[key] || last.replace(/\b\w+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+    return { country, online };
+  }
+  function inPlace(conf, where) {
+    if (!where) return true;
+    if (where === "online") return conf.loc.online;
+    if (where.startsWith("r:")) return (REGIONS[where.slice(2)] || []).includes(conf.loc.country);
+    return conf.loc.country === where.slice(2);
+  }
+  function fillPlaces() {
+    const sel = $("#ws-where"); if (!sel) return;
+    const n = {}; CONFS.forEach((c) => { if (c.loc.country) n[c.loc.country] = (n[c.loc.country] || 0) + 1; });
+    const regions = Object.keys(REGIONS).map((r) => [r, CONFS.filter((c) => REGIONS[r].includes(c.loc.country)).length]).filter(([, k]) => k);
+    sel.innerHTML = `<option value="">Anywhere</option><optgroup label="Region">${regions.map(([r, k]) => `<option value="r:${esc(r)}">${esc(r)} (${k})</option>`).join("")}<option value="online">Online or hybrid (${CONFS.filter((c) => c.loc.online).length})</option></optgroup>`
+      + `<optgroup label="Country">${Object.keys(n).sort().map((c) => `<option value="c:${esc(c)}">${esc(c)} (${n[c]})</option>`).join("")}</optgroup>`;
+  }
   const ready = Promise.all([
-    fetch("data/conferences.json").then((r) => r.json()).then((d) => { CONFS = d.conferences.map(prepConf); }).catch(() => {}),
+    fetch("data/conferences.json").then((r) => r.json()).then((d) => { CONFS = d.conferences.map(prepConf); CONFS.forEach((c) => (c.loc = locate(c.place))); fillPlaces(); }).catch(() => {}),
     fetch("data/journals.json").then((r) => r.json()).then((d) => {
       d.journals.forEach((j) => [j.issn, j.issn_resolved].filter(Boolean).forEach((i) => (JC[i] = j)));
     }).catch(() => {}),
@@ -247,6 +287,7 @@
       const fit = 0.6 * (e.sem / maxSem) + 0.4 * (Math.log1p(e.cnt) / Math.log1p(maxCount));
       return { kind: "conference", e, fit, score: fit + rankBoost };
     }).filter((x) => x.e.n > 0 || x.e.cnt >= 25)
+      .filter((x) => inPlace(x.e.conf, opt.where))
       .filter((x) => !opt.months || (x.e.conf.next && Date.parse(x.e.conf.next.deadline) <= horizon))
       .sort((a, b) => b.score - a.score).slice(0, 10);
   }
@@ -334,7 +375,7 @@
     const input = { title: $("#ws-title").value.trim(), abstract: $("#ws-abstract").value.trim(), keywords: $("#ws-keywords").value.trim() };
     if ((input.title + input.abstract + input.keywords).length < 20) { say(`<span class="err">Add at least a title or a few keywords.</span>`); return; }
     const kind = $("input[name=ws-kind]:checked").value;
-    const opt = { oaOnly: $("#ws-oa").checked, maxFee: $("#ws-fee").value === "" ? null : Number($("#ws-fee").value), months: Number($("#ws-months").value) || 0 };
+    const opt = { oaOnly: $("#ws-oa").checked, maxFee: $("#ws-fee").value === "" ? null : Number($("#ws-fee").value), months: Number($("#ws-months").value) || 0, where: ($("#ws-where") || {}).value || "" };
     const ts = terms(input);
     const go = $("#ws-go"); go.disabled = true;
     say(`<span class="spin"></span> Finding the papers closest to yours in OpenAlex…`);

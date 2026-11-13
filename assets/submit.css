@@ -80,3 +80,4 @@
 .ws-known{margin:0;font-size:12px;color:var(--low)}
 .ws-ev{margin:0;font-size:12px;color:var(--ink-2)}
 .ws-note{display:block;font-size:12px;color:var(--muted)}
+.ws-where{min-width:210px}
