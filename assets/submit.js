@@ -99,17 +99,24 @@
   const sid = (u) => String(u || "").split("/").pop();
   const quote = (t) => (t.includes(" ") ? `"${t}"` : t);
 
+  let CLOSEST = 50;
   const SINCE = () => new Date().getFullYear() - YEARS_BACK;
   const GENERIC = new Set("machine learning,deep learning,artificial intelligence,neural network,neural networks,data analysis,case study,systematic review,literature review,proposed method,experimental results,large language models,big data".split(","));
 
   /* the 50 papers closest in meaning to the title + abstract (OpenAlex semantic search, one call) */
   async function semantic(input) {
     const text = [input.title, input.abstract, input.keywords].filter(Boolean).join(". ").slice(0, 2000);
-    const data = await oa("/works", {
-      "search.semantic": text, filter: `publication_year:>${SINCE() - 1}`, per_page: 50,
-      select: "id,title,publication_year,relevance_score,primary_location,primary_topic",
-    });
-    return data.results || [];
+    const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1}`, per_page: 50,
+      select: "id,title,publication_year,relevance_score,primary_location,primary_topic" };
+    const first = (await oa("/works", q)).results || [];
+    // a second page widens the pool to the 100 closest papers; semantic search allows one request a second
+    let second = [];
+    if (first.length === 50) {
+      await new Promise((r) => setTimeout(r, 1100));
+      try { second = (await oa("/works", { ...q, page: 2 })).results || []; } catch (_) { /* the first page is enough to rank */ }
+    }
+    CLOSEST = first.length + second.length;
+    return [...first, ...second];
   }
   /* how many matching papers each venue published (keyword search on the most specific phrases, grouped) */
   function focus(ts) {
@@ -157,7 +164,7 @@
   }
 
   /* ------------------------------------------------------------ journals */
-  const SRC_FIELDS = "id,display_name,issn_l,issn,host_organization_name,type,homepage_url,works_count,cited_by_count,summary_stats,is_oa,is_in_doaj,apc_usd,counts_by_year,topics";
+  const SRC_FIELDS = "id,display_name,issn_l,issn,host_organization_name,type,homepage_url,works_count,cited_by_count,summary_stats,is_oa,is_in_doaj,apc_usd,counts_by_year,topics,is_core";
   function screen(src) {
     const flags = [];
     const issns = [src.issn_l, ...(src.issn || [])].filter(Boolean);
@@ -169,6 +176,8 @@
       if (y1 === y0 + 1 && y1 < new Date().getFullYear() && w1 >= 500 && w1 / Math.max(w0, 1) >= 3) { flags.push({ level: "cau", text: `Output grew ${(w1 / Math.max(w0, 1)).toFixed(1)}× in ${y1}` }); break; }
     }
     if ((src.works_count || 0) < 50) flags.push({ level: "cau", text: "Fewer than 50 papers on record" });
+    const h = (src.summary_stats && src.summary_stats.h_index) || 0;
+    if (!known && !src.is_in_doaj && !src.is_core && h < 25) flags.push({ level: "cau", text: "Little track record: not in DOAJ or the CWTS core list. Run the full check" });
     const level = flags.some((f) => f.level === "high") ? "high" : flags.some((f) => f.level === "cau") ? "cau" : "low";
     return { level, flags };
   }
@@ -180,24 +189,29 @@
   async function rankJournals(sem, counts, opt) {
     const semJ = Object.values(sem.venues).filter((v) => v.type === "journal");
     const ids = [...new Set([
-      ...semJ.sort((a, b) => b.sem - a.sem).slice(0, 15).map((v) => v.id),
-      ...Object.values(counts).sort((a, b) => b.count - a.count).slice(0, 15).map((v) => v.id),
+      ...semJ.sort((a, b) => b.sem - a.sem).slice(0, 20).map((v) => v.id),
+      ...Object.values(counts).sort((a, b) => b.count - a.count).slice(0, 30).map((v) => v.id),
     ])];
     // single-source lookups are free on OpenAlex; fetch five at a time so a burst does not trip its rate limit
     const srcs = [];
     for (let i = 0; i < ids.length; i += 5) srcs.push(...await Promise.all(ids.slice(i, i + 5).map((k) => oa(`/sources/${k}`, { select: SRC_FIELDS }).catch(() => null))));
-    const maxSem = Math.max(0.001, ...semJ.map((v) => v.sem)), maxCount = Math.max(1, ...Object.values(counts).map((v) => v.count));
+    const maxSem = Math.max(0.001, ...semJ.map((v) => v.sem));
     return ids.map((k, i) => ({ k, s: srcs[i] })).filter(({ s }) => s && s.type === "journal").map(({ k, s }) => {
       const v = sem.venues[k] || { sem: 0, n: 0, titles: [] }, cnt = (counts[k] || {}).count || 0;
-      const semN = v.sem / maxSem, countN = Math.log1p(cnt) / Math.log1p(maxCount), sc0 = scope(sem.profile, s);
+      // share of the journal's own output that matches: a specialist journal beats a mega-journal with a bigger raw count
+      const total = (s.counts_by_year || []).filter((c) => c.year >= SINCE()).reduce((a, c) => a + (c.works_count || 0), 0);
+      const share = total ? Math.min(1, cnt / total) : 0;
+      const semN = Math.sqrt(v.sem / maxSem), shareN = Math.min(1, share / 0.05), sc0 = scope(sem.profile, s);
       const scopeN = sc0 == null ? 0.3 : Math.min(1, sc0 / 0.5);           // 50% overlap or more counts as a full scope match
       const h = (s.summary_stats && s.summary_stats.h_index) || 0, quality = Math.min(1, Math.log10(h + 1) / Math.log10(300));
-      const fit = 0.5 * semN + 0.2 * countN + 0.3 * scopeN;
+      // scope also scales the whole fit, so a keyword-heavy journal in another field cannot rank on volume
+      const fit = (0.5 * semN + 0.25 * shareN + 0.25 * scopeN) * (0.35 + 0.65 * scopeN);
       const sc = screen(s), f = fee(s);
-      return { kind: "journal", s, v, cnt, scope: sc0, fit, score: 0.85 * fit + 0.15 * quality - (sc.level === "cau" ? 0.08 : 0), screen: sc, fee: f };
+      return { kind: "journal", s, v, cnt, share, scope: sc0, fit, score: 0.85 * fit + 0.15 * quality - (sc.level === "cau" ? 0.1 : 0), screen: sc, fee: f };
     }).filter((j) => j.screen.level !== "high")
       // a venue whose published topics barely overlap the paper's subject areas is out of scope
-      .filter((j) => j.scope == null || j.scope >= 0.12)
+      .filter((j) => j.scope == null || j.scope >= 0.15)
+      .filter((j) => j.v.n > 0 || j.share >= 0.005)
       .filter((j) => !opt.oaOnly || j.s.is_oa)
       .filter((j) => opt.maxFee == null || j.fee.usd == null || j.fee.usd <= opt.maxFee)
       .sort((a, b) => b.score - a.score).slice(0, 10);
@@ -257,7 +271,7 @@
         <div class="ws-top"><span class="label">Journal${s.host_organization_name ? " · " + esc(s.host_organization_name) : ""}</span>${verdict}</div>
         <h3>${esc(s.display_name)}</h3>
         <div class="ws-fit"><span class="ws-bar"><i style="--w:${pct(j.fit)}%"></i></span><span>${pct(j.fit)}% fit</span></div>
-        <p class="ws-ev">${[j.v.n ? `${j.v.n} of the 50 closest papers` : "", j.cnt ? `${j.cnt.toLocaleString()} matching papers since ${SINCE()}` : "", j.scope != null ? `scope match ${pct(Math.min(1, j.scope / 0.5))}%` : ""].filter(Boolean).join(" · ")}</p>
+        <p class="ws-ev">${[j.v.n ? `${j.v.n} of the ${CLOSEST} closest papers` : "", j.cnt ? `${j.cnt.toLocaleString()} matching papers since ${SINCE()}${j.share >= 0.005 ? ` (${(100 * j.share).toFixed(j.share < 0.1 ? 1 : 0)}% of its output)` : ""}` : "", j.scope != null ? `scope match ${pct(Math.min(1, j.scope / 0.5))}%` : ""].filter(Boolean).join(" · ")}</p>
         ${j.v.titles.length ? `<p class="ws-why">Closest: <i>${j.v.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
           <div><dt>Fee</dt><dd>${esc(j.fee.text)}</dd></div>
@@ -280,7 +294,7 @@
         <div class="ws-top"><span class="label">Conference · ${esc(c.area)}</span>${ranks ? `<span class="chip v-low">${esc(ranks)}</span>` : ""}</div>
         <h3>${esc(c.title)} <span class="ws-sub">${esc(c.name)}</span></h3>
         <div class="ws-fit"><span class="ws-bar"><i style="--w:${pct(x.fit)}%"></i></span><span>${pct(x.fit)}% fit</span></div>
-        <p class="ws-ev">${[x.e.n ? `${x.e.n} of the 50 closest papers` : "", x.e.cnt ? `${x.e.cnt.toLocaleString()} matching papers since ${SINCE()}` : ""].filter(Boolean).join(" · ")}</p>
+        <p class="ws-ev">${[x.e.n ? `${x.e.n} of the ${CLOSEST} closest papers` : "", x.e.cnt ? `${x.e.cnt.toLocaleString()} matching papers since ${SINCE()}` : ""].filter(Boolean).join(" · ")}</p>
         ${x.e.titles.length ? `<p class="ws-why">Closest: <i>${x.e.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
           <div><dt>Next deadline</dt><dd>${dl}</dd></div>
