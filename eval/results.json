@@ -1,0 +1,74 @@
+{
+ "run": "2026-11-13, batch 1 of the 50-paper set (free daily OpenAlex allowance ran out); commit 2ecb03b",
+ "rank": "position of the paper's real venue in the top 10 for its own type (journal or conference), 0 = not in the top 10",
+ "summary": {
+  "papers": 9,
+  "hit_at_10": 7,
+  "hit_at_3": 5
+ },
+ "results": [
+  {
+   "id": "W4413157206",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "CVPR",
+   "rank": 10
+  },
+  {
+   "id": "W4410529847",
+   "kind": "journal",
+   "field": "Agricultural & Biological Sci.",
+   "truth": "The Crop Journal",
+   "rank": 0
+  },
+  {
+   "id": "W4407099248",
+   "kind": "journal",
+   "field": "Computer Science",
+   "truth": "Expert Systems with Applications",
+   "rank": 0
+  },
+  {
+   "id": "W4410875790",
+   "kind": "journal",
+   "field": "Medicine",
+   "truth": "Human Reproduction",
+   "rank": 1
+  },
+  {
+   "id": "W4410633304",
+   "kind": "journal",
+   "field": "Environmental Science",
+   "truth": "Ecological Indicators",
+   "rank": 1
+  },
+  {
+   "id": "W4410698039",
+   "kind": "journal",
+   "field": "Physics & Astronomy",
+   "truth": "Journal of High Energy Physics",
+   "rank": 1
+  },
+  {
+   "id": "W4410304860",
+   "kind": "journal",
+   "field": "Psychology",
+   "truth": "European Journal of Psychotraumatology",
+   "rank": 8
+  },
+  {
+   "id": "W4409366845",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "AAAI",
+   "rank": 3
+  },
+  {
+   "id": "W4416035611",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "EMNLP",
+   "rank": 2
+  }
+ ]
+}
