@@ -270,6 +270,7 @@
         <p class="ws-ev">${[j.v.n ? `${j.v.n} of the ${CLOSEST} closest papers` : "", j.cnt ? `${j.cnt.toLocaleString()} matching papers since ${SINCE()}${j.share >= 0.005 ? ` (${(100 * j.share).toFixed(j.share < 0.1 ? 1 : 0)}% of its output)` : ""}` : "", j.scope != null ? `scope match ${pct(Math.min(1, j.scope / 0.5))}%` : ""].filter(Boolean).join(" · ")}</p>
         ${j.v.titles.length ? `<p class="ws-why">Closest: <i>${j.v.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
+          <div><dt>Submission</dt><dd>Open all year</dd></div>
           <div><dt>Fee</dt><dd>${esc(j.fee.text)}</dd></div>
           <div><dt>Access</dt><dd>${s.is_in_doaj ? "Open access · in DOAJ" : s.is_oa ? "Open access" : "Subscription / hybrid"}</dd></div>
           <div><dt>h-index</dt><dd>${st.h_index ?? "–"}</dd></div>
@@ -293,8 +294,10 @@
         <p class="ws-ev">${[x.e.n ? `${x.e.n} of the ${CLOSEST} closest papers` : "", x.e.cnt ? `${x.e.cnt.toLocaleString()} matching papers since ${SINCE()}` : ""].filter(Boolean).join(" · ")}</p>
         ${x.e.titles.length ? `<p class="ws-why">Closest: <i>${x.e.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
-          <div><dt>Next deadline</dt><dd>${dl}</dd></div>
-          <div><dt>Edition</dt><dd>${esc([c.date, c.place].filter(Boolean).join(" · ") || "–")}</dd></div>
+          <div><dt>Submission deadline</dt><dd>${dl}${nx && nx.comment && !c.estimated ? `<span class="ws-note">${esc(nx.comment)}</span>` : ""}</dd></div>
+          ${nx && nx.abstract && !c.estimated ? `<div><dt>Abstract due</dt><dd>${fmtDate(nx.abstract)}</dd></div>` : ""}
+          <div><dt>Conference dates</dt><dd>${esc(c.date || "Not announced")}</dd></div>
+          <div><dt>Venue</dt><dd>${esc(c.place || "Not announced")}</dd></div>
           <div><dt>Acceptance</dt><dd>${c.accept ? `${Math.round(100 * c.accept.rate)}% (${c.accept.year})` : "–"}</dd></div>
           <div><dt>Fee</dt><dd>See registration page</dd></div>
         </dl>
