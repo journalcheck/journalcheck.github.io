@@ -1,0 +1,410 @@
+{
+ "about": "Held-out test set for Where to submit. Each paper is run through the recommender with itself removed from the search results; a hit means its real venue appears in the top 3 or top 10.",
+ "sampled": "2026-11-13 from OpenAlex: 2025 English articles with abstracts of 80-450 words. Journals: random sample (seed 2026) of core journals per OpenAlex field. Conferences: one paper each from tracked conferences.",
+ "notes": {
+  "field": "OpenAlex's own field label for the paper, kept as-is even when noisy (e.g. a surgery journal labelled Computer Science).",
+  "W4417225344": "Source is named only 'ICCD' in OpenAlex and may not be the IEEE ICCD; treated as a doubtful label."
+ },
+ "papers": [
+  {
+   "id": "W4414490089",
+   "field": "Agricultural & Biological Sci.",
+   "kind": "journal",
+   "venue_id": "S4210213485",
+   "venue": "Plant Science Today",
+   "conference": null
+  },
+  {
+   "id": "W4414479908",
+   "field": "Agricultural & Biological Sci.",
+   "kind": "journal",
+   "venue_id": "S2764591778",
+   "venue": "International Journal of Agricultural Technology",
+   "conference": null
+  },
+  {
+   "id": "W4410529847",
+   "field": "Agricultural & Biological Sci.",
+   "kind": "journal",
+   "venue_id": "S2736600276",
+   "venue": "The Crop Journal",
+   "conference": null
+  },
+  {
+   "id": "W4413148354",
+   "field": "Agricultural & Biological Sci.",
+   "kind": "journal",
+   "venue_id": "S193620188",
+   "venue": "Scientia Horticulturae",
+   "conference": null
+  },
+  {
+   "id": "W4407627293",
+   "field": "Agricultural & Biological Sci.",
+   "kind": "journal",
+   "venue_id": "S2737939966",
+   "venue": "Foods",
+   "conference": null
+  },
+  {
+   "id": "W4413887023",
+   "field": "Computer Science",
+   "kind": "journal",
+   "venue_id": "S2484352698",
+   "venue": "IEEE Transactions on Network Science and Engineering",
+   "conference": null
+  },
+  {
+   "id": "W4411295849",
+   "field": "Computer Science",
+   "kind": "journal",
+   "venue_id": "S41486457",
+   "venue": "International Journal of Pattern Recognition and Artificial Intelligence",
+   "conference": null
+  },
+  {
+   "id": "W4407099248",
+   "field": "Computer Science",
+   "kind": "journal",
+   "venue_id": "S13144211",
+   "venue": "Expert Systems with Applications",
+   "conference": null
+  },
+  {
+   "id": "W4414136645",
+   "field": "Computer Science",
+   "kind": "journal",
+   "venue_id": "S54302288",
+   "venue": "Annali Italiani di Chirurgia",
+   "conference": null
+  },
+  {
+   "id": "W4406321766",
+   "field": "Computer Science",
+   "kind": "journal",
+   "venue_id": "S2480266640",
+   "venue": "IEEE Internet of Things Journal",
+   "conference": null
+  },
+  {
+   "id": "W4410343838",
+   "field": "Engineering",
+   "kind": "journal",
+   "venue_id": "S88457320",
+   "venue": "Journal of Mechanical Design",
+   "conference": null
+  },
+  {
+   "id": "W4414196179",
+   "field": "Engineering",
+   "kind": "journal",
+   "venue_id": "S189798733",
+   "venue": "IEEE Antennas and Wireless Propagation Letters",
+   "conference": null
+  },
+  {
+   "id": "W4407789517",
+   "field": "Engineering",
+   "kind": "journal",
+   "venue_id": "S2765010971",
+   "venue": "Journal of Materials Research and Technology",
+   "conference": null
+  },
+  {
+   "id": "W4406354174",
+   "field": "Engineering",
+   "kind": "journal",
+   "venue_id": "S2484352698",
+   "venue": "IEEE Transactions on Network Science and Engineering",
+   "conference": null
+  },
+  {
+   "id": "W4417486524",
+   "field": "Engineering",
+   "kind": "journal",
+   "venue_id": "S143391730",
+   "venue": "International Journal of Geomechanics",
+   "conference": null
+  },
+  {
+   "id": "W4410633304",
+   "field": "Environmental Science",
+   "kind": "journal",
+   "venue_id": "S194154261",
+   "venue": "Ecological Indicators",
+   "conference": null
+  },
+  {
+   "id": "W4417333274",
+   "field": "Environmental Science",
+   "kind": "journal",
+   "venue_id": "S4210187256",
+   "venue": "Environments",
+   "conference": null
+  },
+  {
+   "id": "W4407002645",
+   "field": "Environmental Science",
+   "kind": "journal",
+   "venue_id": "S2596204836",
+   "venue": "Frontiers in Environmental Science",
+   "conference": null
+  },
+  {
+   "id": "W4409076904",
+   "field": "Environmental Science",
+   "kind": "journal",
+   "venue_id": "S117727964",
+   "venue": "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+   "conference": null
+  },
+  {
+   "id": "W4414706023",
+   "field": "Environmental Science",
+   "kind": "journal",
+   "venue_id": "S4210177564",
+   "venue": "AgriEngineering",
+   "conference": null
+  },
+  {
+   "id": "W4406301304",
+   "field": "Medicine",
+   "kind": "journal",
+   "venue_id": "S4210208768",
+   "venue": "JSFA reports",
+   "conference": null
+  },
+  {
+   "id": "W4408186212",
+   "field": "Medicine",
+   "kind": "journal",
+   "venue_id": "S4210203548",
+   "venue": "Revista Portuguesa de Cardiologia",
+   "conference": null
+  },
+  {
+   "id": "W4415648345",
+   "field": "Medicine",
+   "kind": "journal",
+   "venue_id": "S129317210",
+   "venue": "Transactions of the Royal Society of Tropical Medicine and Hygiene",
+   "conference": null
+  },
+  {
+   "id": "W4411153670",
+   "field": "Medicine",
+   "kind": "journal",
+   "venue_id": "S2736895435",
+   "venue": "Children",
+   "conference": null
+  },
+  {
+   "id": "W4410875790",
+   "field": "Medicine",
+   "kind": "journal",
+   "venue_id": "S127900037",
+   "venue": "Human Reproduction",
+   "conference": null
+  },
+  {
+   "id": "W4410698039",
+   "field": "Physics & Astronomy",
+   "kind": "journal",
+   "venue_id": "S187585107",
+   "venue": "Journal of High Energy Physics",
+   "conference": null
+  },
+  {
+   "id": "W4411345213",
+   "field": "Physics & Astronomy",
+   "kind": "journal",
+   "venue_id": "S4210226722",
+   "venue": "Research Notes of the AAS",
+   "conference": null
+  },
+  {
+   "id": "W4412595585",
+   "field": "Physics & Astronomy",
+   "kind": "journal",
+   "venue_id": "S2737343529",
+   "venue": "Fluids",
+   "conference": null
+  },
+  {
+   "id": "W4410462873",
+   "field": "Physics & Astronomy",
+   "kind": "journal",
+   "venue_id": "S16561315",
+   "venue": "Crystal Growth & Design",
+   "conference": null
+  },
+  {
+   "id": "W4417268120",
+   "field": "Physics & Astronomy",
+   "kind": "journal",
+   "venue_id": "S4210238307",
+   "venue": "Physical review. D/Physical review. D.",
+   "conference": null
+  },
+  {
+   "id": "W7118080687",
+   "field": "Psychology",
+   "kind": "journal",
+   "venue_id": "S2735557189",
+   "venue": "Innovation in Aging",
+   "conference": null
+  },
+  {
+   "id": "W4413446635",
+   "field": "Psychology",
+   "kind": "journal",
+   "venue_id": "S10326139",
+   "venue": "Journal of Human Sport and Exercise",
+   "conference": null
+  },
+  {
+   "id": "W4410304860",
+   "field": "Psychology",
+   "kind": "journal",
+   "venue_id": "S2737785665",
+   "venue": "European Journal of Psychotraumatology",
+   "conference": null
+  },
+  {
+   "id": "W4416096891",
+   "field": "Psychology",
+   "kind": "journal",
+   "venue_id": "S34816297",
+   "venue": "Scandinavian Journal of Psychology",
+   "conference": null
+  },
+  {
+   "id": "W4410588299",
+   "field": "Psychology",
+   "kind": "journal",
+   "venue_id": "S4210240795",
+   "venue": "ReMark - Revista Brasileira de Marketing",
+   "conference": null
+  },
+  {
+   "id": "W4412470796",
+   "field": "Social Sciences",
+   "kind": "journal",
+   "venue_id": "S163917399",
+   "venue": "International Feminist Journal of Politics",
+   "conference": null
+  },
+  {
+   "id": "W4416303821",
+   "field": "Social Sciences",
+   "kind": "journal",
+   "venue_id": "S4210212757",
+   "venue": "Perinatal Journal",
+   "conference": null
+  },
+  {
+   "id": "W4412694946",
+   "field": "Social Sciences",
+   "kind": "journal",
+   "venue_id": "S22816821",
+   "venue": "Annals of Neurosciences",
+   "conference": null
+  },
+  {
+   "id": "W4410981007",
+   "field": "Social Sciences",
+   "kind": "journal",
+   "venue_id": "S162526994",
+   "venue": "International Journal of Market Research",
+   "conference": null
+  },
+  {
+   "id": "W4406485319",
+   "field": "Social Sciences",
+   "kind": "journal",
+   "venue_id": "S157128309",
+   "venue": "International Politics",
+   "conference": null
+  },
+  {
+   "id": "W4413980395",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4210226185",
+   "venue": "Proceedings of the VLDB Endowment",
+   "conference": "VLDB"
+  },
+  {
+   "id": "W4417225344",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4210178384",
+   "venue": "ICCD",
+   "conference": "ICCD"
+  },
+  {
+   "id": "W4407309343",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4363606243",
+   "venue": "neural information processing systems",
+   "conference": "NeurIPS"
+  },
+  {
+   "id": "W4409366845",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4210191458",
+   "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+   "conference": "AAAI"
+  },
+  {
+   "id": "W4408353658",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4363607879",
+   "venue": "IEEE International Conference on Acoustics Speech and Signal Processing",
+   "conference": "ICASSP"
+  },
+  {
+   "id": "W4413157206",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4210176548",
+   "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+   "conference": "CVPR"
+  },
+  {
+   "id": "W4416251974",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4363607707",
+   "venue": "International Joint Conference on Neural Networks (IJCNN)",
+   "conference": "IJCNN"
+  },
+  {
+   "id": "W7160074705",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4363607764",
+   "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+   "conference": "ICCV"
+  },
+  {
+   "id": "W4416750900",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4393918188",
+   "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+   "conference": "IROS"
+  },
+  {
+   "id": "W4416035611",
+   "field": "Computer Science",
+   "kind": "conference",
+   "venue_id": "S4363608991",
+   "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+   "conference": "EMNLP"
+  }
+ ]
+}

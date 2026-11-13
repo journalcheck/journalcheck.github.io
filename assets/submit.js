@@ -183,8 +183,13 @@
   const GENERIC = new Set("machine learning,deep learning,artificial intelligence,neural network,neural networks,data analysis,case study,systematic review,literature review,proposed method,experimental results,large language models,big data".split(","));
 
   /* the 50 papers closest in meaning to the title + abstract (OpenAlex semantic search, one call) */
+  const SEM_MAX = 1450;
   async function semantic(input) {
-    const text = [input.title, input.abstract, input.keywords].filter(Boolean).join(". ").slice(0, 2000);
+    // the free API rejects semantic queries over 1,500 characters, so keep the title and keywords whole
+    // and cut the abstract at a word boundary to fit
+    const head = [input.title, input.keywords].filter(Boolean).join(". ");
+    let text = [head, input.abstract].filter(Boolean).join(". ").replace(/\s+/g, " ").trim();
+    if (text.length > SEM_MAX) text = text.slice(0, SEM_MAX).replace(/\s+\S*$/, "");
     const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1},is_retracted:false`, per_page: 50,
       select: "id,title,publication_year,relevance_score,primary_location,primary_topic" };
     const res = (await oa("/works", q)).results || [];
