@@ -106,7 +106,7 @@
   /* the 50 papers closest in meaning to the title + abstract (OpenAlex semantic search, one call) */
   async function semantic(input) {
     const text = [input.title, input.abstract, input.keywords].filter(Boolean).join(". ").slice(0, 2000);
-    const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1},is_retracted:false,type:article|review`, per_page: 50,
+    const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1},is_retracted:false`, per_page: 50,
       select: "id,title,publication_year,relevance_score,primary_location,primary_topic" };
     const res = (await oa("/works", q)).results || [];
     CLOSEST = res.length || 50;
@@ -120,7 +120,8 @@
   async function grouped(ts, sourceType) {
     const data = await oa("/works", {
       search: focus(ts).map(quote).join(" OR "),
-      filter: `from_publication_date:${SINCE()}-01-01,primary_location.source.type:${sourceType},is_retracted:false,type:article|review`,
+      // journals: research and review articles only (no retraction notices or errata); conference papers carry mixed types
+      filter: `from_publication_date:${SINCE()}-01-01,primary_location.source.type:${sourceType},is_retracted:false${sourceType === "journal" ? ",type:article|review" : ""}`,
       group_by: "primary_location.source.id",
     });
     const m = {};
