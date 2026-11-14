@@ -170,7 +170,17 @@
     const u = new URL(OA + path);
     Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
     if (key()) u.searchParams.set("api_key", key());
-    const r = await fetch(u, { headers: { Accept: "application/json" } });
+    let r, left = NaN;
+    // a 429 is either the per-second limit (budget left: wait and retry) or the daily allowance (budget gone)
+    for (let attempt = 0; ; attempt++) {
+      r = await fetch(u, { headers: { Accept: "application/json" } });
+      if (r.status !== 429) break;
+      left = parseFloat(r.headers.get("x-ratelimit-remaining-usd"));
+      if ((Number.isFinite(left) && left <= 0.0005) || attempt >= 3) break;
+      const wait = Math.min(8, parseFloat(r.headers.get("retry-after")) || 0) * 1000 || 700 * 2 ** attempt;
+      await new Promise((res) => setTimeout(res, wait + Math.random() * 300));
+    }
+    if (r.status === 429 && left > 0.0005) throw new Error("OpenAlex is busy right now. Wait a minute and search again.");
     if (r.status === 429) { $(".ws-adv").open = true; throw new Error("OpenAlex's free daily allowance for this network is used up (on a shared network such as a campus it is shared by everyone). Paste a free OpenAlex key under “Options” below and search again, or try tomorrow."); }
     if (!r.ok) throw new Error(`OpenAlex answered ${r.status}.`);
     return r.json();
