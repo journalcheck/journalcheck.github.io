@@ -1,10 +1,28 @@
 {
- "run": "2026-11-13, batch 1 of the 50-paper set (free daily OpenAlex allowance ran out); commit 2ecb03b",
- "rank": "position of the paper's real venue in the top 10 for its own type (journal or conference), 0 = not in the top 10",
+ "run": "2026-11-13 (9 papers) and 2026-11-14 (41 papers); recommender at commits 2ecb03b and 570c326",
+ "method": "Each paper is entered as title + abstract + OpenAlex keywords, with 'Looking for' set to its real venue type. The paper itself is removed from the search results. rank = position of its real venue in the 10 results for that type; 0 = not in the top 10.",
  "summary": {
-  "papers": 9,
-  "hit_at_10": 7,
-  "hit_at_3": 5
+  "all": {
+   "n": 50,
+   "top1": 9,
+   "top3": 16,
+   "top10": 25,
+   "mrr": 0.27
+  },
+  "journals": {
+   "n": 40,
+   "top1": 7,
+   "top3": 10,
+   "top10": 16,
+   "mrr": 0.24
+  },
+  "conferences": {
+   "n": 10,
+   "top1": 2,
+   "top3": 6,
+   "top10": 9,
+   "mrr": 0.42
+  }
  },
  "results": [
   {
@@ -19,14 +37,38 @@
    "kind": "journal",
    "field": "Agricultural & Biological Sci.",
    "truth": "The Crop Journal",
-   "rank": 0
+   "rank": 0,
+   "top10_when_missed": [
+    "Frontiers in Plant Science",
+    "PLANT PHYSIOLOGY",
+    "Crop Science",
+    "Plants",
+    "Theoretical and Applied Genetics",
+    "Computers and Electronics in Agriculture",
+    "Journal of Experimental Botany",
+    "BMC Plant Biology",
+    "Plant Methods",
+    "Plant Physiology and Biochemistry"
+   ]
   },
   {
    "id": "W4407099248",
    "kind": "journal",
    "field": "Computer Science",
    "truth": "Expert Systems with Applications",
-   "rank": 0
+   "rank": 0,
+   "top10_when_missed": [
+    "IEEE Transactions on Information Forensics and Security",
+    "IEEE Transactions on Pattern Analysis and Machine Intelligen",
+    "IEEE Transactions on Image Processing",
+    "Pattern Recognition",
+    "Journal of King Saud University - Computer and Information S",
+    "Neurocomputing",
+    "Intelligent Systems with Applications",
+    "Artificial Intelligence Review",
+    "IEEE Transactions on Neural Networks and Learning Systems",
+    "Information Processing & Management"
+   ]
   },
   {
    "id": "W4410875790",
@@ -68,6 +110,562 @@
    "kind": "conference",
    "field": "Computer Science",
    "truth": "EMNLP",
+   "rank": 2
+  },
+  {
+   "id": "W4414490089",
+   "kind": "journal",
+   "field": "Agricultural & Biological Sci.",
+   "truth": "Plant Science Today",
+   "rank": 0,
+   "top10_when_missed": [
+    "International Journal of Environment and Climate Change",
+    "International Journal of Advanced Biochemistry Research",
+    "Journal of Entomological Research",
+    "International Journal of Bio-resource and Stress Management",
+    "International Journal of Plant & Soil Science",
+    "Journal of Entomology and Zoology Studies",
+    "Legume Research - An International Journal",
+    "Journal of Advances in Biology & Biotechnology",
+    "Indian Journal of Agricultural Research",
+    "Egyptian Academic Journal of Biological Sciences"
+   ]
+  },
+  {
+   "id": "W4414479908",
+   "kind": "journal",
+   "field": "Agricultural & Biological Sci.",
+   "truth": "International Journal of Agricultural Technology",
+   "rank": 0,
+   "top10_when_missed": [
+    "Plant Disease",
+    "New Disease Reports",
+    "Plant Pathology",
+    "Australasian Plant Pathology",
+    "Journal of Phytopathology",
+    "Journal of Plant Pathology",
+    "Mycological Progress",
+    "Crop Protection",
+    "Canadian Journal of Plant Pathology",
+    "Archives of Phytopathology and Plant Protection"
+   ]
+  },
+  {
+   "id": "W4413148354",
+   "kind": "journal",
+   "field": "Agricultural & Biological Sci.",
+   "truth": "Scientia Horticulturae",
+   "rank": 4
+  },
+  {
+   "id": "W4407627293",
+   "kind": "journal",
+   "field": "Agricultural & Biological Sci.",
+   "truth": "Foods",
+   "rank": 1
+  },
+  {
+   "id": "W4413887023",
+   "kind": "journal",
+   "field": "Computer Science",
+   "truth": "IEEE Transactions on Network Science and Engineering",
+   "rank": 0,
+   "top10_when_missed": [
+    "Proceedings on Privacy Enhancing Technologies",
+    "Procedia Computer Science",
+    "IEEE Transactions on Services Computing",
+    "Artificial Intelligence Review",
+    "IEEE Transactions on Mobile Computing",
+    "ACM Computing Surveys",
+    "Frontiers in Artificial Intelligence",
+    "Forensic Science International Digital Investigation",
+    "Information",
+    "Discover Artificial Intelligence"
+   ]
+  },
+  {
+   "id": "W4411295849",
+   "kind": "journal",
+   "field": "Computer Science",
+   "truth": "International Journal of Pattern Recognition and Artificial Intelligence",
+   "rank": 0,
+   "top10_when_missed": [
+    "IEEE Transactions on Circuits and Systems for Video Technolo",
+    "Multimedia Tools and Applications",
+    "The Visual Computer",
+    "Neurocomputing",
+    "Information Fusion",
+    "Applied Intelligence",
+    "Multimedia Systems",
+    "ACM Transactions on Multimedia Computing",
+    "Neural Networks",
+    "Sensors"
+   ]
+  },
+  {
+   "id": "W4414136645",
+   "kind": "journal",
+   "field": "Computer Science",
+   "truth": "Annali Italiani di Chirurgia",
+   "rank": 0,
+   "top10_when_missed": [
+    "npj Digital Medicine",
+    "Journal of Imaging Informatics in Medicine",
+    "Intelligence-Based Medicine",
+    "Biomedical Signal Processing and Control",
+    "Frontiers in Artificial Intelligence",
+    "Machine Learning with Applications",
+    "Discover Computing",
+    "Medical Physics",
+    "Diagnostics",
+    "International Journal of Artificial Intelligence and Machine"
+   ]
+  },
+  {
+   "id": "W4406321766",
+   "kind": "journal",
+   "field": "Computer Science",
+   "truth": "IEEE Internet of Things Journal",
+   "rank": 0,
+   "top10_when_missed": [
+    "Information",
+    "Egyptian Informatics Journal",
+    "The Journal of Supercomputing",
+    "Journal of Parallel and Distributed Computing",
+    "Future Internet",
+    "Expert Systems",
+    "International Journal of Advanced Computer Science and Appli",
+    "International Journal of Intelligent Systems and Application",
+    "The Computer Journal",
+    "Security and Privacy"
+   ]
+  },
+  {
+   "id": "W4410343838",
+   "kind": "journal",
+   "field": "Engineering",
+   "truth": "Journal of Mechanical Design",
+   "rank": 0,
+   "top10_when_missed": [
+    "Lubricants",
+    "Tribology International",
+    "Journal of Tribology",
+    "Proceedings of the Institution of Mechanical Engineers Part J",
+    "Friction",
+    "Lubrication Science",
+    "Tribology Transactions",
+    "Industrial Lubrication and Tribology",
+    "Proceedings of the Institution of Mechanical Engineers Part C",
+    "Journal of Mechanical Science and Technology"
+   ]
+  },
+  {
+   "id": "W4414196179",
+   "kind": "journal",
+   "field": "Engineering",
+   "truth": "IEEE Antennas and Wireless Propagation Letters",
+   "rank": 1
+  },
+  {
+   "id": "W4407789517",
+   "kind": "journal",
+   "field": "Engineering",
+   "truth": "Journal of Materials Research and Technology",
+   "rank": 3
+  },
+  {
+   "id": "W4406354174",
+   "kind": "journal",
+   "field": "Engineering",
+   "truth": "IEEE Transactions on Network Science and Engineering",
+   "rank": 10
+  },
+  {
+   "id": "W4417486524",
+   "kind": "journal",
+   "field": "Engineering",
+   "truth": "International Journal of Geomechanics",
+   "rank": 4
+  },
+  {
+   "id": "W4417333274",
+   "kind": "journal",
+   "field": "Environmental Science",
+   "truth": "Environments",
+   "rank": 0,
+   "top10_when_missed": [
+    "Desalination",
+    "Waste Management",
+    "Environmental Pollution",
+    "Water Research",
+    "Desalination and Water Treatment",
+    "Water",
+    "Environmental Science and Pollution Research",
+    "Journal of Environmental Management",
+    "Waste Management & Research",
+    "ACS ES&T Water"
+   ]
+  },
+  {
+   "id": "W4407002645",
+   "kind": "journal",
+   "field": "Environmental Science",
+   "truth": "Frontiers in Environmental Science",
+   "rank": 0,
+   "top10_when_missed": [
+    "Ecological Indicators",
+    "Land",
+    "Journal of Environmental Management",
+    "Land Use Policy",
+    "Environmental Monitoring and Assessment",
+    "Sustainability",
+    "Environmental Research Letters",
+    "Agriculture Ecosystems & Environment",
+    "Environmental Earth Sciences",
+    "Water"
+   ]
+  },
+  {
+   "id": "W4409076904",
+   "kind": "journal",
+   "field": "Environmental Science",
+   "truth": "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+   "rank": 0,
+   "top10_when_missed": [
+    "Ecological Indicators",
+    "Remote Sensing",
+    "Acta Ecologica Sinica",
+    "Remote Sensing of Environment",
+    "Ecosphere",
+    "Land",
+    "Journal of Geophysical Research Biogeosciences",
+    "Geocarto International",
+    "Ecological Modelling",
+    "Forests"
+   ]
+  },
+  {
+   "id": "W4414706023",
+   "kind": "journal",
+   "field": "Environmental Science",
+   "truth": "AgriEngineering",
+   "rank": 0,
+   "top10_when_missed": [
+    "Scientia Horticulturae",
+    "Agriculture",
+    "Frontiers in Plant Science",
+    "Journal of soil science and plant nutrition",
+    "Agronomy",
+    "Plants",
+    "HortScience",
+    "Journal of Plant Growth Regulation",
+    "Horticulturae",
+    "BMC Plant Biology"
+   ]
+  },
+  {
+   "id": "W4406301304",
+   "kind": "journal",
+   "field": "Medicine",
+   "truth": "JSFA reports",
+   "rank": 0,
+   "top10_when_missed": [
+    "Antioxidants",
+    "Molecules",
+    "Food Chemistry",
+    "Journal of Agricultural and Food Chemistry",
+    "Critical Reviews in Food Science and Nutrition",
+    "European Food Research and Technology",
+    "Foods",
+    "LWT",
+    "Food Bioscience",
+    "Current Research in Food Science"
+   ]
+  },
+  {
+   "id": "W4408186212",
+   "kind": "journal",
+   "field": "Medicine",
+   "truth": "Revista Portuguesa de Cardiologia",
+   "rank": 2
+  },
+  {
+   "id": "W4415648345",
+   "kind": "journal",
+   "field": "Medicine",
+   "truth": "Transactions of the Royal Society of Tropical Medicine and Hygiene",
+   "rank": 0,
+   "top10_when_missed": [
+    "PLoS neglected tropical diseases",
+    "BMC Infectious Diseases",
+    "The Journal of Infection in Developing Countries",
+    "SAGE Open Medicine",
+    "Health Science Reports",
+    "Skin Health and Disease",
+    "British Journal of Dermatology",
+    "BMJ Open",
+    "Nutrients",
+    "International Journal of Environmental Research and Public H"
+   ]
+  },
+  {
+   "id": "W4411153670",
+   "kind": "journal",
+   "field": "Medicine",
+   "truth": "Children",
+   "rank": 0,
+   "top10_when_missed": [
+    "Pediatric Rheumatology",
+    "RMD Open",
+    "Rheumatology",
+    "ACR Open Rheumatology",
+    "Annals of the Rheumatic Diseases",
+    "Clinical Rheumatology",
+    "Arthritis Care & Research",
+    "Frontiers in Pediatrics",
+    "Clinical and Experimental Rheumatology",
+    "Journal of Autoimmunity"
+   ]
+  },
+  {
+   "id": "W4411345213",
+   "kind": "journal",
+   "field": "Physics & Astronomy",
+   "truth": "Research Notes of the AAS",
+   "rank": 1
+  },
+  {
+   "id": "W4412595585",
+   "kind": "journal",
+   "field": "Physics & Astronomy",
+   "truth": "Fluids",
+   "rank": 0,
+   "top10_when_missed": [
+    "The Astrophysical Journal",
+    "Universe",
+    "Journal of Plasma Physics",
+    "Monthly Notices of the Royal Astronomical Society",
+    "The Astrophysical Journal Letters",
+    "Physics of Plasmas",
+    "Physical Review X",
+    "Journal of Cosmology and Astroparticle Physics",
+    "Physical Review Letters",
+    "Plasma Physics and Controlled Fusion"
+   ]
+  },
+  {
+   "id": "W4410462873",
+   "kind": "journal",
+   "field": "Physics & Astronomy",
+   "truth": "Crystal Growth & Design",
+   "rank": 0,
+   "top10_when_missed": [
+    "physica status solidi (b)",
+    "Applied Physics Letters",
+    "Journal of Applied Physics",
+    "Физика и техника полупроводников"
+   ]
+  },
+  {
+   "id": "W4417268120",
+   "kind": "journal",
+   "field": "Physics & Astronomy",
+   "truth": "Physical review. D/Physical review. D.",
+   "rank": 1
+  },
+  {
+   "id": "W7118080687",
+   "kind": "journal",
+   "field": "Psychology",
+   "truth": "Innovation in Aging",
+   "rank": 4
+  },
+  {
+   "id": "W4413446635",
+   "kind": "journal",
+   "field": "Psychology",
+   "truth": "Journal of Human Sport and Exercise",
+   "rank": 0,
+   "top10_when_missed": [
+    "Psychology of sport and exercise",
+    "Retos",
+    "Frontiers in Psychology",
+    "Children",
+    "Physical Education and Sport Pedagogy",
+    "Pedagogy of Physical Culture and Sports",
+    "Journal of Physical Education and Sport",
+    "International journal of human movement and sports sciences",
+    "Education Sciences",
+    "South African Journal of Childhood Education"
+   ]
+  },
+  {
+   "id": "W4416096891",
+   "kind": "journal",
+   "field": "Psychology",
+   "truth": "Scandinavian Journal of Psychology",
+   "rank": 0,
+   "top10_when_missed": [
+    "Child Psychiatry & Human Development",
+    "Journal of Affective Disorders",
+    "Cognitive Therapy and Research",
+    "Journal of Anxiety Disorders",
+    "Child Abuse & Neglect",
+    "Child and Adolescent Psychiatry and Mental Health",
+    "International Journal of Clinical and Health Psychology",
+    "Journal of Psychopathology and Behavioral Assessment",
+    "Behavioral Sciences",
+    "International Journal of Mental Health Promotion"
+   ]
+  },
+  {
+   "id": "W4410588299",
+   "kind": "journal",
+   "field": "Psychology",
+   "truth": "ReMark - Revista Brasileira de Marketing",
+   "rank": 0,
+   "top10_when_missed": [
+    "Current Psychology",
+    "Behavioral Sciences",
+    "BMC Psychology",
+    "International journal of psychological research",
+    "Psico-USF",
+    "Trends in Psychology",
+    "Death Studies",
+    "Psicologia Reflexão e Crítica",
+    "Psychological Test Adaptation and Development",
+    "International Journal of Intercultural Relations"
+   ]
+  },
+  {
+   "id": "W4412470796",
+   "kind": "journal",
+   "field": "Social Sciences",
+   "truth": "International Feminist Journal of Politics",
+   "rank": 0,
+   "top10_when_missed": [
+    "Global Constitutionalism",
+    "International Affairs",
+    "Globalizations",
+    "European Journal of Politics and Gender",
+    "Women s Studies International Forum",
+    "International Relations",
+    "American Journal of Sociology",
+    "Violence Against Women",
+    "Gender Work and Organization",
+    "Hypatia"
+   ]
+  },
+  {
+   "id": "W4416303821",
+   "kind": "journal",
+   "field": "Social Sciences",
+   "truth": "Perinatal Journal",
+   "rank": 0,
+   "top10_when_missed": [
+    "Journal of Education and Learning",
+    "European Journal of Education",
+    "Vocational Education Innovation and Research Journal",
+    "Education Sciences",
+    "Frontiers in Education",
+    "International Journal of Evaluation and Research in Educatio",
+    "Journal of Association of Professional Development of Educat",
+    "Journal of Mani Chettha Ram Wat Chommani",
+    "International Journal of Academic Research in Progressive Ed",
+    "Journal of Technical Education and Training"
+   ]
+  },
+  {
+   "id": "W4412694946",
+   "kind": "journal",
+   "field": "Social Sciences",
+   "truth": "Annals of Neurosciences",
+   "rank": 0,
+   "top10_when_missed": [
+    "Cyberpsychology Behavior and Social Networking",
+    "International Journal of Adolescence and Youth",
+    "Sexuality & Culture",
+    "Computers in Human Behavior",
+    "International Review of Social Sciences Research",
+    "Communication & Society",
+    "Journal of Interpersonal Violence",
+    "Technium Social Sciences Journal",
+    "Journal of Education Technology in Health Sciences"
+   ]
+  },
+  {
+   "id": "W4410981007",
+   "kind": "journal",
+   "field": "Social Sciences",
+   "truth": "International Journal of Market Research",
+   "rank": 6
+  },
+  {
+   "id": "W4406485319",
+   "kind": "journal",
+   "field": "Social Sciences",
+   "truth": "International Politics",
+   "rank": 2
+  },
+  {
+   "id": "W4413980395",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "VLDB",
+   "rank": 2
+  },
+  {
+   "id": "W4417225344",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "ICCD",
+   "rank": 1
+  },
+  {
+   "id": "W4407309343",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "NeurIPS",
+   "rank": 1
+  },
+  {
+   "id": "W4408353658",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "ICASSP",
+   "rank": 8
+  },
+  {
+   "id": "W4416251974",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "IJCNN",
+   "rank": 0,
+   "top10_when_missed": [
+    "ICIP",
+    "CVC",
+    "ICIC",
+    "ICPR",
+    "3DV",
+    "CVPR",
+    "AAAI",
+    "NeurIPS",
+    "ACM MM",
+    "ICCV"
+   ]
+  },
+  {
+   "id": "W7160074705",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "ICCV",
+   "rank": 7
+  },
+  {
+   "id": "W4416750900",
+   "kind": "conference",
+   "field": "Computer Science",
+   "truth": "IROS",
    "rank": 2
   }
  ]
