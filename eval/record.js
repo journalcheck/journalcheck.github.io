@@ -54,6 +54,12 @@
     const fetchRetry = async (u, o) => {
       for (let a = 0; ; a++) {
         const r = await base(u, o);
+        // 429: per-second limit, short back-off. 503: OpenAlex has paused free semantic search under load
+        // and asks for a retry after about 60 s; wait it out so the recording is not a failed search.
+        if (r.status === 503 && a < 6) {
+          let wait = 60; try { wait = (await r.clone().json()).retryAfter || 60; } catch {}
+          await sleep((wait + 2) * 1000); continue;
+        }
         if (r.status !== 429 || a >= 4) return r;
         await sleep(800 * 2 ** a);
       }

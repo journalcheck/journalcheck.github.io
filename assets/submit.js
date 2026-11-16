@@ -182,13 +182,13 @@
     }
     if (r.status === 429 && left > 0.0005) throw new Error("OpenAlex is busy right now. Wait a minute and search again.");
     if (r.status === 429) { $(".ws-adv").open = true; throw new Error("OpenAlex's free daily allowance for this network is used up (on a shared network such as a campus it is shared by everyone). Paste a free OpenAlex key under “Options” below and search again, or try tomorrow."); }
-    if (!r.ok) throw new Error(`OpenAlex answered ${r.status}.`);
+    if (!r.ok) throw Object.assign(new Error(`OpenAlex answered ${r.status}.`), { status: r.status });
     return r.json();
   }
   const sid = (u) => String(u || "").split("/").pop();
   const quote = (t) => (t.includes(" ") ? `"${t}"` : t);
 
-  let CLOSEST = 50;
+  let CLOSEST = 50, SEM_PAUSED = false;
   const SINCE = () => new Date().getFullYear() - YEARS_BACK;
   const GENERIC = new Set("machine learning,deep learning,artificial intelligence,neural network,neural networks,data analysis,case study,systematic review,literature review,proposed method,experimental results,large language models,big data".split(","));
 
@@ -202,7 +202,10 @@
     if (text.length > SEM_MAX) text = text.slice(0, SEM_MAX).replace(/\s+\S*$/, "");
     const q = { "search.semantic": text, filter: `publication_year:>${SINCE() - 1},is_retracted:false`, per_page: 50,
       select: "id,title,publication_year,relevance_score,primary_location,primary_topic" };
-    const res = (await oa("/works", q)).results || [];
+    // under heavy load OpenAlex pauses free semantic search (503, "retry in 60s"); rank on keywords alone then
+    let res;
+    try { res = (await oa("/works", q)).results || []; SEM_PAUSED = false; }
+    catch (err) { if (err.status !== 503) throw err; res = []; SEM_PAUSED = true; }
     CLOSEST = res.length || 50;
     return res;
   }
@@ -225,7 +228,7 @@
   /* per-venue evidence from the semantic results; plus the paper's subject profile */
   function fromSemantic(works) {
     const by = {}, sub = {}, field = {};
-    const minRel = Math.min(...works.map((w) => w.relevance_score || 0));
+    const minRel = works.length ? Math.min(...works.map((w) => w.relevance_score || 0)) : 0;
     works.forEach((w) => {
       const r = Math.max(0.01, (w.relevance_score || 0) - minRel + 0.02);
       const t = w.primary_topic;
@@ -243,16 +246,33 @@
   }
   /* histogram intersection between the paper's subfields and the venue's published topics */
   function scope(profile, src) {
+    if (!Object.keys(profile.sub).length) return null;   // no closest papers, so no subject profile to compare
     const tp = src.topics || [];
     const tot = tp.reduce((a, t) => a + (t.count || 0), 0);
     if (!tot) return null;
     const vs = {}, vf = {};
     tp.forEach((t) => { const w = (t.count || 0) / tot; if (t.subfield) vs[t.subfield.display_name] = (vs[t.subfield.display_name] || 0) + w; if (t.field) vf[t.field.display_name] = (vf[t.field.display_name] || 0) + w; });
-    const inter = (a, b) => Object.keys(a).reduce((s, k) => s + Math.min(a[k], b[k] || 0), 0);
+    const t = T();
+    // intersect: overlap of two distributions, so a broad journal scores low for any one paper.
+    // coverage: how much of the paper's subject mass the journal publishes in at a meaningful level.
+    const inter = t.scopeMode === "coverage"
+      ? (a, b) => Object.keys(a).reduce((s, k) => s + a[k] * Math.min(1, (b[k] || 0) / t.scopeTau), 0)
+      : (a, b) => Object.keys(a).reduce((s, k) => s + Math.min(a[k], b[k] || 0), 0);
     return 0.7 * inter(profile.sub, vs) + 0.3 * inter(profile.field, vf);
   }
 
   /* ------------------------------------------------------------ journals */
+  // ranking settings in one place; the evaluation replay (eval/replay.js) overrides them per experiment
+  const TUNE = {
+    topSem: 20, topKw: 30,                          // candidates: journals among the closest papers, and by keyword count
+    wSem: 0.5, wShare: 0.25, wScope: 0.25, wCount: 0, // weights inside fit
+    shareCap: 0.05, scopeCap: 0.5, countCap: 200,     // values at or above these count as a full match
+    scopeMode: "intersect", scopeTau: 0.05,           // "coverage": credit a subfield once it is >= scopeTau of the journal's topics
+    gateFloor: 0.35,                                  // fit is scaled by gateFloor + (1 - gateFloor) * scope
+    wQuality: 0.15, cautionPenalty: 0.1,
+    scopeMin: 0.15, kwShareMin: 0.005, kwScopeMin: 0.3,
+  };
+  const T = () => Object.assign({}, TUNE, window.__wsTune || {});
   const SRC_FIELDS = "id,display_name,issn_l,issn,host_organization_name,type,homepage_url,works_count,cited_by_count,summary_stats,is_oa,is_in_doaj,apc_usd,counts_by_year,topics,is_core";
   function screen(src) {
     const flags = [];
@@ -276,10 +296,11 @@
     return { usd: 0, text: "Subscription (no fee to publish closed)" };
   }
   async function rankJournals(sem, counts, opt) {
+    const t = T(), noProfile = !Object.keys(sem.profile.sub).length;
     const semJ = Object.values(sem.venues).filter((v) => v.type === "journal");
     const ids = [...new Set([
-      ...semJ.sort((a, b) => b.sem - a.sem).slice(0, 20).map((v) => v.id),
-      ...Object.values(counts).sort((a, b) => b.count - a.count).slice(0, 30).map((v) => v.id),
+      ...semJ.sort((a, b) => b.sem - a.sem).slice(0, t.topSem).map((v) => v.id),
+      ...Object.values(counts).sort((a, b) => b.count - a.count).slice(0, t.topKw).map((v) => v.id),
     ])];
     // single-source lookups are free on OpenAlex; fetch five at a time so a burst does not trip its rate limit
     const srcs = [];
@@ -290,17 +311,18 @@
       // share of the journal's own output that matches: a specialist journal beats a mega-journal with a bigger raw count
       const total = (s.counts_by_year || []).filter((c) => c.year >= SINCE()).reduce((a, c) => a + (c.works_count || 0), 0);
       const share = total ? Math.min(1, cnt / total) : 0;
-      const semN = Math.sqrt(v.sem / maxSem), shareN = Math.min(1, share / 0.05), sc0 = scope(sem.profile, s);
-      const scopeN = sc0 == null ? 0.3 : Math.min(1, sc0 / 0.5);           // 50% overlap or more counts as a full scope match
+      const semN = Math.sqrt(v.sem / maxSem), shareN = Math.min(1, share / t.shareCap), sc0 = scope(sem.profile, s);
+      const scopeN = sc0 == null ? 0.3 : Math.min(1, sc0 / t.scopeCap);
+      const countN = Math.min(1, Math.log1p(cnt) / Math.log1p(t.countCap));
       const h = (s.summary_stats && s.summary_stats.h_index) || 0, quality = Math.min(1, Math.log10(h + 1) / Math.log10(300));
       // scope also scales the whole fit, so a keyword-heavy journal in another field cannot rank on volume
-      const fit = (0.5 * semN + 0.25 * shareN + 0.25 * scopeN) * (0.35 + 0.65 * scopeN);
+      const fit = (t.wSem * semN + t.wShare * shareN + t.wScope * scopeN + t.wCount * countN) * (t.gateFloor + (1 - t.gateFloor) * scopeN);
       const sc = screen(s), f = fee(s);
-      return { kind: "journal", s, v, cnt, share, scope: sc0, fit, score: 0.85 * fit + 0.15 * quality - (sc.level === "cau" ? 0.1 : 0), screen: sc, fee: f };
+      return { kind: "journal", s, v, cnt, share, scope: sc0, fit, score: (1 - t.wQuality) * fit + t.wQuality * quality - (sc.level === "cau" ? t.cautionPenalty : 0), screen: sc, fee: f };
     }).filter((j) => j.screen.level !== "high")
       // a venue whose published topics barely overlap the paper's subject areas is out of scope
-      .filter((j) => j.scope == null || j.scope >= 0.15)
-      .filter((j) => j.v.n > 0 ? true : (j.share >= 0.005 && j.scope != null && j.scope >= 0.3))
+      .filter((j) => j.scope == null || j.scope >= t.scopeMin)
+      .filter((j) => j.v.n > 0 ? true : (j.share >= t.kwShareMin && (noProfile || (j.scope != null && j.scope >= t.kwScopeMin))))
       .filter((j) => !opt.oaOnly || j.s.is_oa)
       .filter((j) => opt.maxFee == null || j.fee.usd == null || j.fee.usd <= opt.maxFee)
       .sort((a, b) => b.score - a.score).slice(0, 10);
@@ -464,7 +486,9 @@
           ${kind !== "conference" ? col("Journals", js, journalCard, "No journal matched. Try broader keywords or remove a filter.", "is-j") : ""}
           ${kind !== "journal" ? col("Conferences (computer science)", cs, confCard, "No tracked conference matched. Conference deadlines cover computer science only for now.", "is-c") : ""}
         </div>`;
-      say(`Done. Ranked by meaning-level similarity, matching papers since ${SINCE()} and scope; high-risk journals were removed.`);
+      say(SEM_PAUSED
+        ? `Done, with keywords only: OpenAlex has paused its free meaning-level search because of heavy load, so these are ranked by matching papers since ${SINCE()}. Search again in a minute for the full ranking.`
+        : `Done. Ranked by meaning-level similarity, matching papers since ${SINCE()} and scope; high-risk journals were removed.`);
       out.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (err) {
       say(`<span class="err">${esc(err.message || "Something went wrong.")}</span>`);
