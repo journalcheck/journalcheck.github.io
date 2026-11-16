@@ -306,7 +306,7 @@
     const srcs = [];
     for (let i = 0; i < ids.length; i += 5) srcs.push(...await Promise.all(ids.slice(i, i + 5).map((k) => oa(`/sources/${k}`, { select: SRC_FIELDS }).catch(() => null))));
     const maxSem = Math.max(0.001, ...semJ.map((v) => v.sem));
-    return ids.map((k, i) => ({ k, s: srcs[i] })).filter(({ s }) => s && s.type === "journal").map(({ k, s }) => {
+    const scored = ids.map((k, i) => ({ k, s: srcs[i] })).filter(({ s }) => s && s.type === "journal").map(({ k, s }) => {
       const v = sem.venues[k] || { sem: 0, n: 0, titles: [] }, cnt = (counts[k] || {}).count || 0;
       // share of the journal's own output that matches: a specialist journal beats a mega-journal with a bigger raw count
       const total = (s.counts_by_year || []).filter((c) => c.year >= SINCE()).reduce((a, c) => a + (c.works_count || 0), 0);
@@ -319,7 +319,12 @@
       const fit = (t.wSem * semN + t.wShare * shareN + t.wScope * scopeN + t.wCount * countN) * (t.gateFloor + (1 - t.gateFloor) * scopeN);
       const sc = screen(s), f = fee(s);
       return { kind: "journal", s, v, cnt, share, scope: sc0, fit, score: (1 - t.wQuality) * fit + t.wQuality * quality - (sc.level === "cau" ? t.cautionPenalty : 0), screen: sc, fee: f };
-    }).filter((j) => j.screen.level !== "high")
+    });
+    // evaluation only: keep every candidate's numbers and the first filter that removed it
+    if (t.debug) window.__wsDebug = scored.map((j) => ({ id: j.s.id.split("/").pop(), name: j.s.display_name, sem: +j.v.sem.toFixed(3), n: j.v.n, cnt: j.cnt, share: +j.share.toFixed(4),
+      scope: j.scope == null ? null : +j.scope.toFixed(3), fit: +j.fit.toFixed(3), score: +j.score.toFixed(3), screen: j.screen.level,
+      cut: j.screen.level === "high" ? "high risk" : (j.scope != null && j.scope < t.scopeMin) ? "scopeMin" : (j.v.n === 0 && !(j.share >= t.kwShareMin && (noProfile || (j.scope != null && j.scope >= t.kwScopeMin)))) ? "kw-only gate" : "" }));
+    return scored.filter((j) => j.screen.level !== "high")
       // a venue whose published topics barely overlap the paper's subject areas is out of scope
       .filter((j) => j.scope == null || j.scope >= t.scopeMin)
       .filter((j) => j.v.n > 0 ? true : (j.share >= t.kwShareMin && (noProfile || (j.scope != null && j.scope >= t.kwScopeMin))))
