@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261113a">
-<link rel="stylesheet" href="assets/submit.css?v=20261113a">
+<link rel="stylesheet" href="assets/style.css?v=20261116a">
+<link rel="stylesheet" href="assets/submit.css?v=20261116a">
 <script>
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
     document.documentElement.classList.add("motion");
@@ -112,6 +112,22 @@
     <p class="note ws-sources">Conference deadlines, ranks and acceptance rates come from the community-maintained <a href="https://github.com/ccfddl/ccf-deadlines" rel="noopener">ccfddl</a> list and a hand-checked list of conferences held in India. Both cover computer science only.</p>
   </div>
 </section>
+
+<section class="section" id="ws-eval">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label">How well does it work?</p><h2>Tested on<br>50 real papers</h2></div>
+      <p>We took 50 papers published in 2025, across eight fields, and ran each through this page with the paper itself hidden from the search. A hit means the venue it was actually published in appears in the list.</p>
+    </div>
+    <div class="stats ws-stats" aria-label="Evaluation results">
+      <div class="stat"><span class="sv">9/10</span><span class="lbl">conference papers: the real conference is in the top 10</span></div>
+      <div class="stat"><span class="sv">6/10</span><span class="lbl">conference papers: in the top 3</span></div>
+      <div class="stat"><span class="sv">16/40</span><span class="lbl">journal papers: the real journal is in the top 10</span></div>
+      <div class="stat"><span class="sv">8</span><span class="lbl">fields tested, from medicine to physics</span></div>
+    </div>
+    <p class="note ws-eval-note">A miss is not always bad advice. The real venue is one good answer among several, and most misses still listed journals in the right subject. The tool finds specialist journals more easily than broad ones that publish on many topics, and some papers sit in journals outside their subject altogether. Method, data and every result: <a href="https://github.com/journalcheck/journalcheck.github.io/tree/main/eval" rel="noopener">eval/ on GitHub</a>.</p>
+  </div>
+</section>
 </main>
 
 <footer class="foot">
@@ -121,7 +137,7 @@
   </div>
 </footer>
 
-<script src="assets/submit.js?v=20261113a" defer></script>
-<script src="assets/motion.js?v=20261113a" defer></script>
+<script src="assets/submit.js?v=20261116a" defer></script>
+<script src="assets/motion.js?v=20261116a" defer></script>
 </body>
 </html>

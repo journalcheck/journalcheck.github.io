@@ -1,0 +1,37 @@
+# Rebuilds data/conferences.json from the ccfddl dataset every Monday, so the
+# "Where to submit" deadlines stay current. Commits only when something changed.
+name: Refresh conference deadlines
+
+on:
+  schedule:
+    - cron: "17 2 * * 1"   # Mondays 02:17 UTC (07:47 IST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch ccfddl
+        run: git clone --depth 1 https://github.com/ccfddl/ccf-deadlines.git /tmp/ccf-deadlines
+      - name: Build
+        run: |
+          pip install pyyaml
+          python tools/build_conferences.py /tmp/ccf-deadlines
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- data/conferences.json; then
+            echo "No deadline changes this week."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898783+github-actions[bot]@users.noreply.github.com"
+          git add data/conferences.json
+          git commit -m "Refresh conference deadlines from ccfddl"
+          git push
