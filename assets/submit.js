@@ -435,7 +435,7 @@
         ${x.e.titles.length ? `<p class="ws-why">Closest: <i>${x.e.titles.map(esc).join("</i> · <i>")}</i></p>` : ""}
         <dl class="ws-facts">
           <div><dt>Submission deadline</dt><dd>${dl}${nx && nx.comment && !c.estimated ? `<span class="ws-note">${esc(nx.comment)}</span>` : ""}</dd></div>
-          ${nx && nx.abstract && !c.estimated ? `<div><dt>Abstract due</dt><dd>${fmtDate(nx.abstract)}</dd></div>` : ""}
+          ${nx && nx.abstract && !c.estimated ? `<div><dt>Abstract due</dt><dd>${fmtDate(nx.abstract)}${Date.parse(nx.abstract) < Date.now() ? ` <span class="small">· passed</span>` : ""}</dd></div>` : ""}
           <div><dt>${c.estimated ? `Edition on record (${esc(c.year)})` : "Conference dates"}</dt><dd>${esc(c.date || "Not announced")}</dd></div>
           <div><dt>${c.estimated ? "Its venue" : "Venue"}</dt><dd>${esc(c.place || "Not announced")}</dd></div>
           <div><dt>Acceptance</dt><dd>${c.accept ? `${Math.round(100 * c.accept.rate)}% (${c.accept.year})` : "–"}</dd></div>
